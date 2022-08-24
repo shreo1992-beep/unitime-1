@@ -424,7 +424,6 @@ public class RoomsTable extends UniTimeTable<RoomDetailInterface>{
 			if (idx == 0) return MESSAGES.colFeatures();
 			else return getFeatureType(idx - 1).getAbbreviation();
 		case SERVICES: return MESSAGES.colAvailableServices();
-		case PARTITION: return MESSAGES.colPartitionOf();
 		default: return column.name();
 		}
 	}
@@ -483,7 +482,6 @@ public class RoomsTable extends UniTimeTable<RoomDetailInterface>{
 		switch (column) {
 		case EXTERNAL_ID:
 		case TYPE:
-		case PARTITION:
 			return RoomsColumn.EXTERNAL_ID;
 		case CAPACITY:
 		case EXAM_CAPACITY:
@@ -815,9 +813,6 @@ public class RoomsTable extends UniTimeTable<RoomDetailInterface>{
 		case SERVICES:
 			if (!room.hasServices()) return null;
 			return new ServicesCell(room.getServices(), room.getEventDepartment());
-		case PARTITION:
-			if (room.getParent() == null) return null;
-			return new RoomNameCell(room.getParent());
 		}
 		return null;
 	}

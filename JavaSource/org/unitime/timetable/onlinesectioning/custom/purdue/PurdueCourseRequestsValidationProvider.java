@@ -92,7 +92,6 @@ import org.unitime.timetable.model.CourseDemand;
 import org.unitime.timetable.model.InstructionalOffering;
 import org.unitime.timetable.model.SchedulingSubpart;
 import org.unitime.timetable.model.StudentSectioningStatus;
-import org.unitime.timetable.model.CourseDemand.Critical;
 import org.unitime.timetable.model.CourseRequest.CourseRequestOverrideIntent;
 import org.unitime.timetable.model.CourseRequest.CourseRequestOverrideStatus;
 import org.unitime.timetable.model.InstrOfferingConfig;
@@ -374,7 +373,6 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 		Integer CONF_BANNER = Integer.valueOf(1);
 		
 		OnlineSectioningModel model = new OnlineSectioningModel(server.getConfig(), server.getOverExpectedCriterion());
-		model.setDayOfWeekOffset(server.getAcademicSession().getDayOfWeekOffset());
 		boolean linkedClassesMustBeUsed = server.getConfig().getPropertyBoolean("LinkedClasses.mustBeUsed", false);
 		Assignment<Request, Enrollment> assignment = new AssignmentMap<Request, Enrollment>();
 		
@@ -383,10 +381,6 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 		student.setName(original.getName());
 		student.setNeedShortDistances(original.hasAccomodation(server.getDistanceMetric().getShortDistanceAccommodationReference()));
 		student.setAllowDisabled(original.isAllowDisabled());
-		student.setClassFirstDate(original.getClassStartDate());
-		student.setClassLastDate(original.getClassEndDate());
-		student.setBackToBackPreference(original.getBackToBackPreference());
-		student.setModalityPreference(original.getModalityPreference());
 		Map<Long, Section> classTable = new HashMap<Long, Section>();
 		Set<XDistribution> distributions = new HashSet<XDistribution>();
 		Hashtable<CourseRequest, Set<Section>> preferredSections = new Hashtable<CourseRequest, Set<Section>>();
@@ -954,7 +948,6 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 		}
 		
 		boolean questionDropCritical = false;
-		boolean dropImportant = false, dropVital = false, dropCritical = false;
 		for (XRequest r: original.getRequests()) {
 			if (r instanceof XCourseRequest) {
 				XCourseRequest cr = (XCourseRequest)r;
@@ -967,22 +960,9 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 					}
 					if (!hasCourse) {
 						XCourseId course = cr.getCourseIds().get(0);
-						if (cr.getCritical() == 2) {
-							response.addMessage(course.getCourseId(), course.getCourseName(), "DROP_CRIT",
-									ApplicationProperties.getProperty("purdue.specreg.messages.courseDropCrit", "Important course has been removed.").replace("{course}", course.getCourseName()),
-									CONF_UNITIME);
-							dropImportant = true;
-						} else if (cr.getCritical() == 3) {
-							response.addMessage(course.getCourseId(), course.getCourseName(), "DROP_CRIT",
-									ApplicationProperties.getProperty("purdue.specreg.messages.courseDropCrit", "Vital course has been removed.").replace("{course}", course.getCourseName()),
-									CONF_UNITIME);
-							dropVital = true;
-						} else {
-							response.addMessage(course.getCourseId(), course.getCourseName(), "DROP_CRIT",
-									ApplicationProperties.getProperty("purdue.specreg.messages.courseDropCrit", "Critical course has been removed.").replace("{course}", course.getCourseName()),
-									CONF_UNITIME);
-							dropCritical = true;
-						}
+						response.addMessage(course.getCourseId(), course.getCourseName(), "DROP_CRIT",
+								ApplicationProperties.getProperty("purdue.specreg.messages.courseDropCrit", "Critical course has been removed.").replace("{course}", course.getCourseName()),
+								CONF_UNITIME);
 						questionDropCritical = true;
 					}
 				}
@@ -991,8 +971,6 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 		
 		// Check for missing critical courses that have been recommended by the advisor
 		boolean questionMissingAdvisorCritical = false;
-		boolean missCritical = false, missImportant = false, missVital = false;
-		CourseDemand.Critical advCritical = CourseDemand.Critical.fromText(ApplicationProperty.AdvisorCourseRequestsAllowCritical.valueOfSession(server.getAcademicSession().getUniqueId()));
 		if (original.hasAdvisorRequests()) {
 			for (XAdvisorRequest ar: original.getAdvisorRequests()) {
 				if (ar.getAlternative() == 0 && !ar.isSubstitute() && ar.isCritical() && ar.hasCourseId()) {
@@ -1007,22 +985,9 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 							}
 						}
 						if (!hasAlt) {
-							if (advCritical == Critical.IMPORTANT) {
-								response.addMessage(ar.getCourseId().getCourseId(), ar.getCourseId().getCourseName(), "DROP_CRIT",
-										ApplicationProperties.getProperty("purdue.specreg.messages.courseMissingAdvisedCritical", "Missing important course that has been recommended by the advisor.").replace("{course}", ar.getCourseId().getCourseName()),
-										CONF_UNITIME);
-								missImportant = true;
-							} else if (advCritical == Critical.VITAL) {
-								response.addMessage(ar.getCourseId().getCourseId(), ar.getCourseId().getCourseName(), "DROP_CRIT",
-										ApplicationProperties.getProperty("purdue.specreg.messages.courseMissingAdvisedCritical", "Missing vital course that has been recommended by the advisor.").replace("{course}", ar.getCourseId().getCourseName()),
-										CONF_UNITIME);
-								missVital = true;
-							} else {
-								response.addMessage(ar.getCourseId().getCourseId(), ar.getCourseId().getCourseName(), "DROP_CRIT",
-										ApplicationProperties.getProperty("purdue.specreg.messages.courseMissingAdvisedCritical", "Missing critical course that has been recommended by the advisor.").replace("{course}", ar.getCourseId().getCourseName()),
-										CONF_UNITIME);
-								missCritical = true;
-							}
+							response.addMessage(ar.getCourseId().getCourseId(), ar.getCourseId().getCourseName(), "DROP_CRIT",
+									ApplicationProperties.getProperty("purdue.specreg.messages.courseMissingAdvisedCritical", "Missing critical course that has been recommended by the advisor.").replace("{course}", ar.getCourseId().getCourseName()),
+									CONF_UNITIME);
 							questionMissingAdvisorCritical = true;
 						}
 					}
@@ -1036,30 +1001,15 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 			int idx = 1;
 			if (note != null && !note.isEmpty()) {
 				response.addConfirmation(note, CONF_BANNER, idx++);
-				Set<String> courses = new HashSet<String>();
-				boolean hasCredit = false;
-				for (CourseMessage x: response.getMessages(CONF_BANNER)) {
-					if ("CREDIT".equals(x.getCode()) || "MAXI".equals(x.getCode())) { hasCredit = true; continue; }
-					if (x.hasCourse() && courses.add(x.getCourse())) {
-						CourseMessage cm = response.addConfirmation("", CONF_BANNER, idx++);
-						cm.setCourse(x.getCourse()); cm.setCourseId(x.getCourseId());
-						cm.setCode("REQUEST_NOTE");
-						for (String suggestion: ApplicationProperties.getProperty("purdue.specreg.prereg.requestorNoteSuggestions", "").split("[\r\n]+"))
-							if (!suggestion.isEmpty()) cm.addSuggestion(suggestion); 
-					}
-				}
-				if (hasCredit) {
-					CourseMessage cm = response.addConfirmation("", CONF_BANNER, idx++);
-					cm.setCourse(MESSAGES.tabRequestNoteMaxCredit());
-					cm.setCode("REQUEST_NOTE");
-					for (String suggestion: ApplicationProperties.getProperty("purdue.specreg.prereg.requestorNoteSuggestions", "").split("[\r\n]+"))
-						if (!suggestion.isEmpty()) cm.addSuggestion(suggestion);
-				}
+				CourseMessage cm = response.addConfirmation("", CONF_BANNER, idx++);
+				cm.setCode("REQUEST_NOTE");
+				for (String suggestion: ApplicationProperties.getProperty("purdue.specreg.prereg.requestorNoteSuggestions", "").split("[\r\n]+"))
+					if (!suggestion.isEmpty()) cm.addSuggestion(suggestion); 
 			}
 			response.addConfirmation(
 					ApplicationProperties.getProperty("purdue.specreg.messages.requestOverrides",
 							"\nIf you have already discussed these courses with your advisor and were advised to request " +
-							"registration in them please select Request Overrides & Submit. If you aren\u2019t sure, click Cancel Submit and " +
+							"registration in them please select Request Overrides & Submit. If you aren’t sure, click Cancel Submit and " +
 							"consult with your advisor before coming back to your Course Request page."),
 					CONF_BANNER, idx++);
 		}
@@ -1078,42 +1028,14 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 			response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.timeConflicts", (creditError != null || questionNoAlt ? "\n" : "") +
 					"Two or more single section courses are conflicting with each other. You will likely not be able to get the conflicting course, so please provide an alternative course if possible."),
 					CONF_UNITIME, 4);
-		
-		if (questionDropCritical) {
-			if (dropVital && !dropCritical && !dropImportant)
-				response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.dropCritical", (creditError != null || questionNoAlt ? "\n" : "") +
-						"One or more vital courses have been removed. This may prohibit progress towards degree. Please consult with your academic advisor."),
-						CONF_UNITIME, 5);
-			else if (dropImportant && !dropVital && !dropCritical)
-				response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.dropCritical", (creditError != null || questionNoAlt ? "\n" : "") +
-						"One or more important courses have been removed. This may prohibit progress towards degree. Please consult with your academic advisor."),
-						CONF_UNITIME, 5);
-			else if (advCritical != Critical.NORMAL)
-				response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.dropCritical", (creditError != null || questionNoAlt ? "\n" : "") +
-						"One or more critical courses have been removed. This may prohibit progress towards degree. Please consult with your academic advisor."),
-						CONF_UNITIME, 5);
-			else
-				response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.dropCritical", (creditError != null || questionNoAlt ? "\n" : "") +
-						"One or more courses that are marked as critical in your degree plan have been removed. This may prohibit progress towards degree. Please consult with your academic advisor."),
-						CONF_UNITIME, 5);
-		}
+		if (questionDropCritical)
+			response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.dropCritical", (creditError != null || questionNoAlt || questionTimeConflict ? "\n" : "") +
+					"One or more courses that are marked as critical in your degree plan have been removed. This may prohibit progress towards degree. Please consult with your academic advisor."),
+					CONF_UNITIME, 5);
 		if (questionMissingAdvisorCritical)
-			if (advCritical == Critical.IMPORTANT || (missImportant && !missCritical && !missVital))
-				response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.missingAdvisedCritical", (creditError != null || questionNoAlt || questionDropCritical ? "\n" : "") +
-						"One or more courses that are marked by your advisor as important have not been requested. This may prohibit progress towards degree. Please see you advisor course requests and/or consult with your academic advisor."),
-						CONF_UNITIME, 6);
-			else if (advCritical == Critical.VITAL || (missVital && !missCritical && !missImportant))
-				response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.missingAdvisedCritical", (creditError != null || questionNoAlt || questionDropCritical ? "\n" : "") +
-						"One or more courses that are marked by your advisor as vital have not been requested. This may prohibit progress towards degree. Please see you advisor course requests and/or consult with your academic advisor."),
-						CONF_UNITIME, 6);
-			else if (advCritical == Critical.CRITICAL)
-				response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.missingAdvisedCritical", (creditError != null || questionNoAlt || questionDropCritical ? "\n" : "") +
-						"One or more courses that are marked by your advisor as critical have not been requested. This may prohibit progress towards degree. Please see you advisor course requests and/or consult with your academic advisor."),
-						CONF_UNITIME, 6);
-			else
-				response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.missingAdvisedCritical", (creditError != null || questionNoAlt || questionDropCritical ? "\n" : "") +
-						"One or more courses that are marked as critical in your degree plan and that have been listed by your advisor have not been requested. This may prohibit progress towards degree. Please see you advisor course requests and/or consult with your academic advisor."),
-						CONF_UNITIME, 6);
+			response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.missingAdvisedCritical", (creditError != null || questionNoAlt || questionTimeConflict || questionDropCritical ? "\n" : "") +
+					"One or more courses that are marked as critical in your degree plan and that have been listed by your advisor have not been requested. This may prohibit progress towards degree. Please see you advisor course requests and/or consult with your academic advisor."),
+					CONF_UNITIME, 6);
 		if (questionRestrictionsNotMet) {
 			if (onlineOnly)
 				response.addConfirmation(ApplicationProperties.getProperty("purdue.specreg.messages.onlineOnlyNotMet", (creditError != null || questionNoAlt || questionTimeConflict || questionDropCritical || questionMissingAdvisorCritical ? "\n" : "") +
@@ -1272,8 +1194,8 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 
 		if (request.hasConfirmations()) {
 			for (CourseMessage m: request.getConfirmations()) {
-				if ("REQUEST_NOTE".equals(m.getCode()) && m.getMessage() != null && !m.getMessage().isEmpty() && !m.hasCourseId()) {
-					req.maxCreditRequestorNotes = m.getMessage();
+				if ("REQUEST_NOTE".equals(m.getCode()) && m.getMessage() != null && !m.getMessage().isEmpty()) {
+					req.requestorNotes = m.getMessage();
 				}
 			}
 			for (CourseRequestInterface.Request c: request.getCourses())
@@ -1293,7 +1215,6 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 							if ("OVERLAP".equals(m.getCode())) continue;
 							if ("NOT-ONLINE".equals(m.getCode())) continue;
 							if ("NOT-RESIDENTIAL".equals(m.getCode())) continue;
-							if ("REQUEST_NOTE".equals(m.getCode())) continue;
 							if (!m.hasCourse()) continue;
 							if (!m.isError() && (course.getCourseId().equals(m.getCourseId()) || course.getCourseName().equals(m.getCourse()))) {
 								ChangeError e = new ChangeError();
@@ -1309,11 +1230,6 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 							ch.operation = ChangeOperation.ADD;
 							req.changes.add(ch);
 							overrides.remove(subject + " " + courseNbr);
-							for (CourseMessage m: request.getConfirmations()) {
-								if ("REQUEST_NOTE".equals(m.getCode()) && m.getMessage() != null && !m.getMessage().isEmpty() && course.getCourseName().equals(m.getCourse())) {
-									ch.requestorNotes = m.getMessage();
-								}
-							}
 						}
 					}
 				}
@@ -1467,7 +1383,7 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 												rc.setStatus(status(r, false));
 												rc.setStatusNote(SpecialRegistrationHelper.note(r, false));
 												rc.setRequestId(r.regRequestId);
-												rc.setRequestorNote(SpecialRegistrationHelper.requestorNotes(r, subject, courseNbr));
+												rc.setRequestorNote(r.requestorNotes);
 												break;
 											}
 										}
@@ -1496,8 +1412,6 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 											rc.setOverrideExternalId(r.regRequestId);
 											rc.setStatus(status(r, false));
 											rc.setStatusNote(SpecialRegistrationHelper.note(r, false));
-											rc.setRequestId(r.regRequestId);
-											rc.setRequestorNote(SpecialRegistrationHelper.requestorNotes(r, subject, courseNbr));
 											break;
 										}
 									}
@@ -1515,7 +1429,7 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 										.replace("{max}", sCreditFormat.format(maxCredit)).replace("{credit}", sCreditFormat.format(req.maxCredit))
 										);
 								request.setCreditNote(SpecialRegistrationHelper.note(r, true));
-								request.setRequestorNote(SpecialRegistrationHelper.maxCreditRequestorNotes(r));
+								request.setRequestorNote(r.requestorNotes);
 								request.setRequestId(r.regRequestId);
 								break;
 							}
@@ -2068,7 +1982,7 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 						if (r.maxCredit != null)
 							request.setMaxCreditOverride(r.maxCredit);
 						creditNote = SpecialRegistrationHelper.note(r, true);
-						request.setRequestorNote(SpecialRegistrationHelper.maxCreditRequestorNotes(r));
+						request.setRequestorNote(r.requestorNotes);
 						request.setRequestId(r.regRequestId);
 						for (String suggestion: ApplicationProperties.getProperty("purdue.specreg.prereg.requestorNoteSuggestions", "").split("[\r\n]+"))
 							if (!suggestion.isEmpty()) request.addRequestorNoteSuggestion(suggestion);
@@ -2094,7 +2008,7 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 									}
 								}
 					rc.setStatusNote(SpecialRegistrationHelper.note(r, false));
-					rc.setRequestorNote(SpecialRegistrationHelper.requestorNotes(r, rc.getCourseName()));
+					rc.setRequestorNote(r.requestorNotes);
 					rc.setRequestId(r.regRequestId);
 					for (String suggestion: ApplicationProperties.getProperty("purdue.specreg.prereg.requestorNoteSuggestions", "").split("[\r\n]+"))
 						if (!suggestion.isEmpty()) rc.addRequestorNoteSuggestion(suggestion);
@@ -2324,12 +2238,11 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 		if (!hasNotApprovedCourseRequestOverride(student) && !"true".equalsIgnoreCase(ApplicationProperties.getProperty("purdue.specreg.forceRevalidation", "false"))) return false;
 		
 		OnlineSectioningModel model = new OnlineSectioningModel(server.getConfig(), server.getOverExpectedCriterion());
-		model.setDayOfWeekOffset(server.getAcademicSession().getDayOfWeekOffset());
 		boolean linkedClassesMustBeUsed = server.getConfig().getPropertyBoolean("LinkedClasses.mustBeUsed", false);
 		Assignment<Request, Enrollment> assignment = new AssignmentMap<Request, Enrollment>();
 		
 		XStudent original = server.getStudent(student.getUniqueId());
-		if (original == null) original = new XStudent(student, helper, server.getAcademicSession().getFreeTimePattern(), server.getAcademicSession().getDatePatternFirstDate());
+		if (original == null) original = new XStudent(student, helper, server.getAcademicSession().getFreeTimePattern());
 		WaitListMode wlMode = student.getWaitListMode();
 		
 		Student s = new Student(student.getUniqueId());
@@ -2337,10 +2250,6 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 		s.setName(original.getName());
 		s.setNeedShortDistances(original.hasAccomodation(server.getDistanceMetric().getShortDistanceAccommodationReference()));
 		s.setAllowDisabled(original.isAllowDisabled());
-		s.setClassFirstDate(original.getClassStartDate());
-		s.setClassLastDate(original.getClassEndDate());
-		s.setBackToBackPreference(original.getBackToBackPreference());
-		s.setModalityPreference(original.getModalityPreference());
 		Set<XDistribution> distributions = new HashSet<XDistribution>();
 		Hashtable<CourseRequest, Set<Section>> preferredSections = new Hashtable<CourseRequest, Set<Section>>();
 		Set<XCourseId> lcCourses = new HashSet<XCourseId>();
@@ -2811,7 +2720,7 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 						studentChanged = true;
 					student.setOverrideExternalId(r.regRequestId);
 					student.setOverrideTimeStamp(r.dateCreated == null ? null : r.dateCreated.toDate());
-					student.setMaxCreditOverrideIntent(CourseRequestOverrideIntent.REGISTER);
+					student.setOverrideIntent(null);
 					break;
 				}
 			}
@@ -3131,7 +3040,6 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 		Integer CONF_BANNER = Integer.valueOf(1);
 		
 		OnlineSectioningModel model = new OnlineSectioningModel(server.getConfig(), server.getOverExpectedCriterion());
-		model.setDayOfWeekOffset(server.getAcademicSession().getDayOfWeekOffset());
 		boolean linkedClassesMustBeUsed = server.getConfig().getPropertyBoolean("LinkedClasses.mustBeUsed", false);
 		Assignment<Request, Enrollment> assignment = new AssignmentMap<Request, Enrollment>();
 		
@@ -3140,10 +3048,6 @@ public class PurdueCourseRequestsValidationProvider implements CourseRequestsVal
 		student.setName(original.getName());
 		student.setNeedShortDistances(original.hasAccomodation(server.getDistanceMetric().getShortDistanceAccommodationReference()));
 		student.setAllowDisabled(original.isAllowDisabled());
-		student.setClassFirstDate(original.getClassStartDate());
-		student.setClassLastDate(original.getClassEndDate());
-		student.setBackToBackPreference(original.getBackToBackPreference());
-		student.setModalityPreference(original.getModalityPreference());
 		Map<Long, Section> classTable = new HashMap<Long, Section>();
 		Set<XDistribution> distributions = new HashSet<XDistribution>();
 		Hashtable<CourseRequest, Set<Section>> preferredSections = new Hashtable<CourseRequest, Set<Section>>();

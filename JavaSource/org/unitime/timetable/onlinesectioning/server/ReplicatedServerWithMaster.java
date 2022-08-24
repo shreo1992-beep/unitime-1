@@ -397,8 +397,6 @@ public class ReplicatedServerWithMaster extends AbstractLockingServer {
 
 					// assign
 					cr.setWaitlist(waitlist);
-					cr.setWaitListedTimeStamp(request.getWaitListedTimeStamp());
-					cr.setWaitListSwapWithCourseOffering(request.getWaitListSwapWithCourseOffering());
 					
 					iStudentTable.getAdvancedCache().withFlags(Flag.IGNORE_RETURN_VALUES).put(student.getStudentId(), student);
 					return cr;

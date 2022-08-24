@@ -779,18 +779,10 @@ public class WebTable extends Composite implements HasMobileScroll {
 		}
 		
 		public IconsCell add(ImageResource resource, final String title) {
-			return add(resource, title, false, null);
-		}
-		
-		public IconsCell add(ImageResource resource, final String title, ClickHandler clickHandler) {
-			return add(resource, title, false, clickHandler);
+			return add(resource, title, false);
 		}
 		
 		public IconsCell add(ImageResource resource, final String title, final boolean html) {
-			return add(resource, title, html, null);
-		}
-		
-		public IconsCell add(ImageResource resource, final String title, final boolean html, ClickHandler clickHandler) {
 			if (resource == null) return this;
 			Image icon = new Image(resource);
 			String text = title;
@@ -801,9 +793,7 @@ public class WebTable extends Composite implements HasMobileScroll {
 				icon.getElement().getStyle().setMarginLeft(3, Unit.PX);
 			iPanel.add(icon);
 			iPanel.setCellVerticalAlignment(icon, HasVerticalAlignment.ALIGN_MIDDLE);
-			if (clickHandler != null)
-				icon.addClickHandler(clickHandler);
-			else if (title != null && !title.isEmpty()) {
+			if (title != null && !title.isEmpty()) {
 				icon.addClickHandler(new ClickHandler() {
 					@Override
 					public void onClick(ClickEvent event) {

@@ -78,7 +78,7 @@ public interface CourseMessages extends Messages {
 	
 	@DefaultMessage("Minimum Class Limit:")
 	String propertyMinimumClassLimit();
-	
+        
 	@DefaultMessage("Maximum Class Limit:")
 	String propertyMaximumClassLimit();
 	
@@ -555,7 +555,19 @@ public interface CourseMessages extends Messages {
 	
 	@DefaultMessage("Type")
 	String columnExamType();
+
+        @DefaultMessage("Type")
+        String columnRoomType();
+         
+        @DefaultMessage("Type")
+        String RoomTypeidentifier();
 	
+        @DefaultMessage("Rooms")
+        String NumOfRooms();
+
+        @DefaultMessage("The room type will be deleted. Continue?")
+        String MessageOfDeletionConfirmation();
+
 	@DefaultMessage("Length")
 	String columnExamLength();
 	
@@ -1000,6 +1012,9 @@ public interface CourseMessages extends Messages {
 	
 	@DefaultMessage("Save")
 	String actionSaveCourseOffering();
+        
+         @DefaultMessage("Save")
+        String actionSaveRoomType();
 	
 	@DefaultMessage("Update")
 	String actionUpdateCrossLists();
@@ -1034,6 +1049,12 @@ public interface CourseMessages extends Messages {
 	@DefaultMessage("Add Room Preference")
 	String actionAddRoomPreference();
 	
+         @DefaultMessage("Add Room Type")
+        String actionAddRoomType();
+        @DefaultMessage("Label")
+        String Label();
+        @DefaultMessage("Reference")
+        String Reference();
 	@DefaultMessage("Add Date Pattern Preference")
 	String actionAddDatePatternPreference();
 	
@@ -1108,7 +1129,8 @@ public interface CourseMessages extends Messages {
 	
 	@DefaultMessage("Edit Subpart")
 	String actionEditSubpart();
-	
+        @DefaultMessage("Edit")
+        String actionEditRoomType();
 	@DefaultMessage("Clear Class Preferences")
 	String actionClearClassPreferencesOnSubpart();
 	
@@ -1117,7 +1139,9 @@ public interface CourseMessages extends Messages {
 	
 	@DefaultMessage("Add")
 	String actionAddCourseToCrossList();
-
+        
+        @DefaultMessage("Add")
+        String actionAddRoomTypeToList();
 	@DefaultMessage("Add Coordinator")
 	String actionAddCoordinator();
 	
@@ -1150,6 +1174,8 @@ public interface CourseMessages extends Messages {
 	
 	@DefaultMessage("Back")
 	String actionBackToIOList();
+        @DefaultMessage("Back")
+        String actionBackToRoomTypeList();
 	
 	@DefaultMessage("Edit Course Offering")
 	String actionEditCourseOffering();
@@ -1189,10 +1215,13 @@ public interface CourseMessages extends Messages {
 	
 	@DefaultMessage("Update")
 	String actionUpdateInstructor();
+        @DefaultMessage("Update")
+        String actionUpdateRoomType();
 	
 	@DefaultMessage("Delete")
 	String actionDeleteInstructor();
-	
+	@DefaultMessage("Delete")
+        String actionDeleteRoomType();
 	@DefaultMessage("Lookup")
 	String actionLookupInstructor();
 	
@@ -1231,7 +1260,8 @@ public interface CourseMessages extends Messages {
 
 	@DefaultMessage("A")
 	String accessAddNewInstructionalOffering();
-	
+        @DefaultMessage("A")
+        String accessAddNewRoomType();	
 	@DefaultMessage("E")
 	String accessEditClass();
 
@@ -1510,10 +1540,15 @@ public interface CourseMessages extends Messages {
 	
 	@DefaultMessage("Move Up")
 	String titleMoveUp();
-	
+        
+        @DefaultMessage("Move Up")
+        String RoomTypeMoveUp();	
 	@DefaultMessage("Move Down")
 	String titleMoveDown();
-	
+
+	@DefaultMessage("Move Down")
+        String RoomTypeMoveDown();
+
 	@DefaultMessage("Add Distribution Preference (Alt+{0})")
 	String titleAddDistributionPreference(String accessKey);
 	
@@ -1651,7 +1686,8 @@ public interface CourseMessages extends Messages {
 	
 	@DefaultMessage("Add Room Preference (Alt+{0})")
 	String titleAddRoomPreference(String accessKey);
-	
+        @DefaultMessage("Create New Room Type (Alt+{0})")
+        String titleAddRoomType(String accessKey);	
 	@DefaultMessage("Add Date Pattern Preference (Alt+{0})")
 	String titleAddDatePatternPreference(String accessKey);
 	
@@ -1724,6 +1760,9 @@ public interface CourseMessages extends Messages {
 	@DefaultMessage("Delete Instructional Type")
 	String titleDeleteInstructionalType();		
 	
+        @DefaultMessage("List")
+        String ListRoomType();
+
 	@DefaultMessage("Back to Instructional Offering List (Alt+{0})")
 	String titleBackToIOList(String accessKey);
 	
@@ -2899,6 +2938,9 @@ public interface CourseMessages extends Messages {
 	
 	@DefaultMessage("Room Types:")
 	String propertyRoomTypes();
+        
+        @DefaultMessage("Room Type:")
+        String RoomType();
 	
 	@DefaultMessage("No room matching the above criteria was found.")
 	String messageNoMatchingRoomFound();
@@ -3065,4 +3107,10 @@ public interface CourseMessages extends Messages {
 	
 	@DefaultMessage("Not Wait-Listed Courses")
 	String itemWaitListNotWaitListed();
+        
+        @DefaultMessage("Other")
+        String OtherRoomType();
+       
+        @DefaultMessage("Other Location")
+        String OtherRoomTypeLocation(); 
 }

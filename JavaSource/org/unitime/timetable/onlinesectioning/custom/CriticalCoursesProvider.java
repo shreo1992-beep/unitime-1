@@ -19,7 +19,6 @@
 */
 package org.unitime.timetable.onlinesectioning.custom;
 
-import org.unitime.timetable.model.AdvisorCourseRequest;
 import org.unitime.timetable.model.CourseOffering;
 import org.unitime.timetable.onlinesectioning.OnlineSectioningHelper;
 import org.unitime.timetable.onlinesectioning.OnlineSectioningLog;
@@ -41,9 +40,5 @@ public interface CriticalCoursesProvider {
 		public boolean isEmpty();
 		public int isCritical(CourseOffering course);
 		public int isCritical(XCourseId course);
-	}
-	
-	public static interface AdvisorCriticalCourses {
-		public int isCritical(AdvisorCourseRequest request);
 	}
 }

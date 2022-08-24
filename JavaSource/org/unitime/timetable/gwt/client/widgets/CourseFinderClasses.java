@@ -374,15 +374,13 @@ public class CourseFinderClasses extends UniTimeTable<ClassAssignment> implement
 	}
 	
 	@Override
-	public void onSetValue(RequestedCourse... courses) {
+	public void onSetValue(RequestedCourse course) {
 		iSelectedClasses.clear();
-		if (courses != null)
-			for (RequestedCourse course: courses) 
-				if (course != null && course.hasSelectedClasses()) {
-					iSelectedClasses.addAll(course.getSelectedClasses());
-					for (Preference p: course.getSelectedClasses())
-						if (p.isRequired() && iRequired != null) iRequired.setValue(true);
-				}
+		if (course != null && course.hasSelectedClasses()) {
+			iSelectedClasses.addAll(course.getSelectedClasses());
+			for (Preference p: course.getSelectedClasses())
+				if (p.isRequired() && iRequired != null) iRequired.setValue(true);
+		}
 		for (int row = 1; row < getRowCount(); row++) {
 			ClassAssignment a = getData(row);
 			CheckBox ch = getClassSelection(row);

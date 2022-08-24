@@ -516,7 +516,4 @@ public interface GwtAriaMessages extends Messages {
 	
 	@DefaultMessage("Cancel this approval request.")
 	String altCancelOverrideRequest();
-	
-	@DefaultMessage("Request note for {0}")
-	String requestNoteFor(String course);
 }

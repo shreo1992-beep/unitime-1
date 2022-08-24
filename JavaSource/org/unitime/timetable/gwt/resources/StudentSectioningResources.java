@@ -224,9 +224,6 @@ public interface StudentSectioningResources extends ClientBundle {
 	@Source("org/unitime/timetable/gwt/resources/icons/action_check_blue.png")
 	ImageResource requestsImportant();
 	
-	@Source("org/unitime/timetable/gwt/resources/icons/action_check_gold.png")
-	ImageResource requestsVital();
-	
 	@Source("org/unitime/timetable/gwt/resources/icons/action_delete.png")
 	ImageResource requestsNotCritical();
 	
@@ -250,9 +247,6 @@ public interface StudentSectioningResources extends ClientBundle {
 	
 	@Source("org/unitime/timetable/gwt/resources/icons/stop_gray.png")
 	ImageResource requestNotNeeded();
-
-	@Source("org/unitime/timetable/gwt/resources/icons/action_check_gray.png")
-	ImageResource waitListNotActive();
 	
 	@Source("org/unitime/timetable/gwt/resources/icons/stop.png")
 	ImageResource requestError();
@@ -268,7 +262,4 @@ public interface StudentSectioningResources extends ClientBundle {
 	
 	@Source("org/unitime/timetable/gwt/resources/icons/action_check.png")
 	ImageResource courseEnrolled();
-	
-	@Source("org/unitime/timetable/gwt/resources/icons/cog.png")
-	ImageResource preferences();
 }

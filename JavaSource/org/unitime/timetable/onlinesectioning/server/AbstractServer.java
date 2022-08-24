@@ -82,8 +82,6 @@ import org.unitime.timetable.onlinesectioning.model.XTime;
 import org.unitime.timetable.onlinesectioning.updates.CheckAllOfferingsAction;
 import org.unitime.timetable.onlinesectioning.updates.PersistExpectedSpacesAction;
 import org.unitime.timetable.onlinesectioning.updates.ReloadAllData;
-import org.unitime.timetable.util.Constants;
-import org.unitime.timetable.util.DateUtils;
 import org.unitime.timetable.util.Formats;
 import org.unitime.timetable.util.MemoryCounter;
 
@@ -120,10 +118,6 @@ public abstract class AbstractServer implements OnlineSectioningServer {
 			Session session = SessionDAO.getInstance().get(context.getAcademicSessionId(), hibSession);
 			if (session == null)
 				throw new SectioningException(MSG.exceptionSessionDoesNotExist(context.getAcademicSessionId() == null ? "null" : context.getAcademicSessionId().toString()));
-			
-    		Date firstDay = DateUtils.getDate(1, session.getPatternStartMonth(), session.getSessionStartYear());
-    		iConfig.setProperty("DatePattern.DayOfWeekOffset", Integer.toString(Constants.getDayOfWeek(firstDay)));
-    		
 			AcademicSessionInfo academicSession = new AcademicSessionInfo(session);
 			iLog = LogFactory.getLog(OnlineSectioningServer.class.getName() + ".server[" + academicSession.toCompactString() + "]");
 			iProperties.put("AcademicSession", academicSession);

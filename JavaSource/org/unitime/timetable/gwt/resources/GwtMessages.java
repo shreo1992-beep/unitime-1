@@ -1040,7 +1040,7 @@ public interface GwtMessages extends Messages {
 	
 	@DefaultMessage("Available<br>Services")
 	String colAvailableServices();
-	
+
 	@DefaultMessage("Constraint")
 	String colConflictingConstraint();
 	
@@ -3053,9 +3053,6 @@ public interface GwtMessages extends Messages {
 	
 	@DefaultMessage("The contact information for {0} will be updated.")
 	String confirmMainContactChange(String name);
-	
-	@DefaultMessage("Please confirm you wish to remove all instructors from this course configuration.")
-	String confirmRemoveClassInstructors();	
 
 	@DefaultMessage("One email per line please.")
 	String hintAdditionalEmails();
@@ -7159,13 +7156,4 @@ public interface GwtMessages extends Messages {
 	
 	@DefaultMessage("Course Offering")
 	String sectCourseOffering();
-	
-	@DefaultMessage("Partition of:")
-	String propPartitionOf();
-	
-	@DefaultMessage("Partition of")
-	String colPartitionOf();
-	
-	@DefaultMessage("Not a Partition")
-	String itemNoParition();
 }

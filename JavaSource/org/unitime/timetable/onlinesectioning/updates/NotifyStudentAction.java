@@ -52,7 +52,6 @@ public class NotifyStudentAction implements OnlineSectioningAction<Boolean> {
 	private XOffering iFailedOffering;
 	private XCourseId iFailedCourseId;
 	private XEnrollment iFailedEnrollment;
-	private XEnrollment iDropEnrollment;
 	private SectioningException iFailure;
 	
 	public NotifyStudentAction forStudent(Long studentId) {
@@ -77,11 +76,6 @@ public class NotifyStudentAction implements OnlineSectioningAction<Boolean> {
 		iFailedCourseId = failedCourseId;
 		iFailedEnrollment = failedEnrollment;
 		iFailure = (failure == null ? null : failure instanceof SectioningException ? (SectioningException) failure : new SectioningException(failure.getMessage(), failure));
-		return this;
-	}
-	
-	public NotifyStudentAction dropEnrollment(XEnrollment dropEnrollment) {
-		iDropEnrollment = dropEnrollment;
 		return this;
 	}
 	
@@ -129,10 +123,7 @@ public class NotifyStudentAction implements OnlineSectioningAction<Boolean> {
 				}
 				helper.debug(message);
 				if (isEmailEnabled(server, helper)) {
-					server.execute(server.createAction(StudentEmail.class).forStudent(getStudentId()).fromAction(iSourceAction)
-							.failedEnrollment(iFailedOffering, iFailedCourseId, iFailedEnrollment, iFailure)
-							.dropEnrollment(iDropEnrollment),
-							helper.getUser(), new ServerCallback<Boolean>() {
+					server.execute(server.createAction(StudentEmail.class).forStudent(getStudentId()).fromAction(iSourceAction).failedEnrollment(iFailedOffering, iFailedCourseId, iFailedEnrollment, iFailure), helper.getUser(), new ServerCallback<Boolean>() {
 						@Override
 						public void onFailure(Throwable exception) {
 							helper.error("Failed to notify student: " + exception.getMessage(), exception);
@@ -182,11 +173,7 @@ public class NotifyStudentAction implements OnlineSectioningAction<Boolean> {
 				}
 				helper.debug(message);
 				if (isEmailEnabled(server, helper)) {
-					server.execute(server.createAction(StudentEmail.class)
-							.forStudent(getStudentId())
-							.fromAction(iSourceAction)
-							.oldEnrollment(iOldOffering, iOldCourseId, iOldEnrollment)
-							.dropEnrollment(iDropEnrollment), helper.getUser(), new ServerCallback<Boolean>() {
+					server.execute(server.createAction(StudentEmail.class).forStudent(getStudentId()).fromAction(iSourceAction).oldEnrollment(iOldOffering, iOldCourseId, iOldEnrollment), helper.getUser(), new ServerCallback<Boolean>() {
 						@Override
 						public void onFailure(Throwable exception) {
 							helper.error("Failed to notify student: " + exception.getMessage(), exception);

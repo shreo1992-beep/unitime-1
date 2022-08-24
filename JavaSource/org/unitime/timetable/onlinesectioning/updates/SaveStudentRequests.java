@@ -277,11 +277,6 @@ public class SaveStudentRequests implements OnlineSectioningAction<CourseRequest
 				cd.setPriority(priority);
 				if (r.isWaitList() && !Boolean.TRUE.equals(cd.getWaitlist()))
 					cd.setWaitlistedTimeStamp(ts);
-				if (r.isWaitList()) {
-					cd.setWaitListSwapWithCourseOffering(r.getWaitListSwapWithCourseOfferingId() == null ? null : CourseOfferingDAO.getInstance().get(r.getWaitListSwapWithCourseOfferingId(), helper.getHibSession()));
-				} else {
-					cd.setWaitListSwapWithCourseOffering(null);
-				}
 				cd.setWaitlist(r.isWaitList());
 				cd.setNoSub(r.isNoSub());
 				cd.setCritical(isCritical(false, courses, critical));
@@ -405,11 +400,6 @@ public class SaveStudentRequests implements OnlineSectioningAction<CourseRequest
 				cd.setPriority(priority);
 				if (r.isWaitList() && !Boolean.TRUE.equals(cd.getWaitlist()))
 					cd.setWaitlistedTimeStamp(ts);
-				if (r.isWaitList()) {
-					cd.setWaitListSwapWithCourseOffering(r.getWaitListSwapWithCourseOfferingId() == null ? null : CourseOfferingDAO.getInstance().get(r.getWaitListSwapWithCourseOfferingId(), helper.getHibSession()));
-				} else {
-					cd.setWaitListSwapWithCourseOffering(null);
-				}
 				cd.setWaitlist(r.isWaitList());
 				cd.setNoSub(r.isNoSub());
 				cd.setCritical(isCritical(true, courses, critical));
@@ -511,7 +501,7 @@ public class SaveStudentRequests implements OnlineSectioningAction<CourseRequest
 			RequestedCourseStatus.OVERRIDE_CANCELLED == request.getMaxCreditOverrideStatus() ? CourseRequestOverrideStatus.CANCELLED :
 			RequestedCourseStatus.OVERRIDE_REJECTED == request.getMaxCreditOverrideStatus() ? CourseRequestOverrideStatus.REJECTED : null);
 		student.setOverrideMaxCredit(request.getMaxCreditOverride());
-		student.setMaxCreditOverrideIntent(request.getMaxCreditOverrideExternalId() == null ? null : CourseRequestOverrideIntent.REGISTER);
+		student.setOverrideIntent(null);
 		
 		helper.getHibSession().saveOrUpdate(student);
 		helper.getHibSession().flush();

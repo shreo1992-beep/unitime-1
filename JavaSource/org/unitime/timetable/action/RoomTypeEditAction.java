@@ -41,8 +41,8 @@ import org.unitime.timetable.model.RoomType;
 import org.unitime.timetable.model.dao.RoomTypeDAO;
 import org.unitime.timetable.security.SessionContext;
 import org.unitime.timetable.security.rights.Right;
-
-
+import org.unitime.localization.messages.CourseMessages;
+import org.unitime.localization.impl.Localization;
 /** 
  * @author Tomas Muller
  */
@@ -50,7 +50,7 @@ import org.unitime.timetable.security.rights.Right;
 public class RoomTypeEditAction extends Action {
 	
 	@Autowired SessionContext sessionContext;
-
+        protected final static CourseMessages MSG = Localization.create(CourseMessages.class);
 	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 		RoomTypeEditForm myForm = (RoomTypeEditForm) form;
@@ -69,16 +69,16 @@ public class RoomTypeEditAction extends Action {
         }
         
         // Reset Form
-        if ("Back".equals(op)) {
+        if (MSG.actionBackToRoomTypeList().equals(op)) {
             myForm.reset(mapping, request);
         }
         
-        if ("Add Room Type".equals(op)) {
+        if (MSG.actionAddRoomType().equals(op)) {
             myForm.load(null);
         }
 
         // Add / Update
-        if ("Update".equals(op) || "Save".equals(op)) {
+        if (MSG.actionUpdateRoomType().equals(op) || MSG.actionSaveRoomType().equals(op)) {
             // Validate input
             ActionMessages errors = myForm.validate(mapping, request);
             if(errors.size()>0) {
@@ -123,7 +123,7 @@ public class RoomTypeEditAction extends Action {
         }
 
         // Delete 
-        if("Delete".equals(op)) {
+        if(MSG.actionDeleteRoomType().equals(op)) {
     		Transaction tx = null;
     		
             try {
@@ -143,7 +143,7 @@ public class RoomTypeEditAction extends Action {
         }
         
         // Move Up or Down
-        if("Move Up".equals(op) || "Move Down".equals(op)) {
+        if(MSG.RoomTypeMoveUp().equals(op) || MSG.RoomTypeMoveDown().equals(op)) {
             Transaction tx = null;
             
             try {
@@ -153,7 +153,7 @@ public class RoomTypeEditAction extends Action {
                 
                 RoomType curType = RoomTypeDAO.getInstance().get(myForm.getUniqueId());
                 
-                if ("Move Up".equals(op)) {
+                if (MSG.RoomTypeMoveUp().equals(op)) {
                     boolean found = false;
                     for (Iterator i=RoomType.findAll().iterator();i.hasNext();) {
                         RoomType s = (RoomType)i.next();
@@ -199,7 +199,7 @@ public class RoomTypeEditAction extends Action {
             return mapping.findForward("list");
         }
         
-        return mapping.findForward("Save".equals(myForm.getOp())?"add":"edit");
+        return mapping.findForward(MSG.actionSaveRoomType().equals(myForm.getOp())?"add":"edit");
 		} catch (Exception e) {
 			Debug.error(e);
 			throw e;
@@ -212,7 +212,7 @@ public class RoomTypeEditAction extends Action {
         WebTable webTable = new WebTable( 5,
 			    null, "roomTypeEdit.do?ord=%%",
 			    new String[] {
-                "","Reference", "Label", "Type", "Rooms"},
+                "",MSG.Reference(), MSG.Label(), MSG.columnRoomType(), MSG.NumOfRooms()},
 			    new String[] {"left","left", "left","left", "left"},
 			    null );
         
@@ -227,12 +227,12 @@ public class RoomTypeEditAction extends Action {
             String ops = "";
             if (t.getOrd().intValue()>0) {
                 ops += "<img src='images/arrow_up.png' border='0' align='absmiddle' title='Move Up' " +
-                		"onclick=\"roomTypeEditForm.op2.value='Move Up';roomTypeEditForm.uniqueId.value='"+t.getUniqueId()+"';roomTypeEditForm.submit(); event.cancelBubble=true;\">";
+                		"onclick=\"roomTypeEditForm.op2.value='"+MSG.RoomTypeMoveUp()+"';roomTypeEditForm.uniqueId.value='"+t.getUniqueId()+"';roomTypeEditForm.submit(); event.cancelBubble=true;\">";
             } else
                 ops += "<img src='images/blank.png' border='0' align='absmiddle'>";
             if (i.hasNext()) {
                 ops += "<img src='images/arrow_down.png' border='0' align='absmiddle' title='Move Down' " +
-                		"onclick=\"roomTypeEditForm.op2.value='Move Down';roomTypeEditForm.uniqueId.value='"+t.getUniqueId()+"';roomTypeEditForm.submit(); event.cancelBubble=true;\">";
+                		"onclick=\"roomTypeEditForm.op2.value='"+MSG.RoomTypeMoveDown()+"';roomTypeEditForm.uniqueId.value='"+t.getUniqueId()+"';roomTypeEditForm.submit(); event.cancelBubble=true;\">";
             } else
                 ops += "<img src='images/blank.png' border='0' align='absmiddle'>";
             int nrRooms = t.countRooms();
@@ -240,7 +240,7 @@ public class RoomTypeEditAction extends Action {
                     ops,
                     t.getReference(),
                     t.getLabel(),
-                    (t.isRoom()?"Room":"Other"),
+                    (t.isRoom()?MSG.prefRoom():MSG.OtherRoomType()),
                     String.valueOf(nrRooms),
         		},new Comparable[] {
                     t.getOrd(),

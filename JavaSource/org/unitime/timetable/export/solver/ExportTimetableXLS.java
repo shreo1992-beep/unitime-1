@@ -125,9 +125,8 @@ public class ExportTimetableXLS extends TableExporter {
 			}
 		} else {
 			for (TimetableGridModel model: response.getModels()) {
-				TimetableGrid tg = new TimetableGrid(filter, model, index++, response.getWeekOffset(), true);
-				if (tg.iMeetings.isEmpty()) continue;
 				Sheet sheet = cx.createSheet(model.getName());
+				TimetableGrid tg = new TimetableGrid(filter, model, index++, response.getWeekOffset(), true);
 				tg.print(cx, sheet, 0, 0, null);
 			}
 		}

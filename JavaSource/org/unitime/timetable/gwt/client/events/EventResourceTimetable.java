@@ -1403,8 +1403,7 @@ public class EventResourceTimetable extends Composite implements EventMeetingTab
 		}
 		if (iRoomPanel.getValue() != null && !iRoomPanel.getValue().isAll()) {
 			if (iRoomPanel.getValue().isOne()) {
-				if (!iRoomPanel.getValue().getFirst().getName().equals(meeting.getLocationName()) &&
-					!iRoomPanel.getValue().getFirst().sameLocationOrPartition(meeting.getLocation())) return true;
+				if (!iRoomPanel.getValue().getFirst().getName().equals(meeting.getLocationName())) return true;
 			} else {
 				if (iRoomPanel.getValue().getFirst().getName().compareTo(meeting.getLocationName()) > 0) return true;
 				if (iRoomPanel.getValue().getLast().getName().compareTo(meeting.getLocationName()) < 0) return true;

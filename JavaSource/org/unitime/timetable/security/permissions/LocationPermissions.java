@@ -318,8 +318,6 @@ public class LocationPermissions {
 			
 			if (!controls && !allDepts) return false;
 			
-			if (source.getPartitions() != null && !source.getPartitions().isEmpty()) return false;
-			
 			return true;
 		}
 

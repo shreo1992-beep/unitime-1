@@ -178,10 +178,8 @@ public class StudentSectioningDatabaseSaver extends StudentSectioningSaver {
         		if (cd != null) {
         			cd.setPriority(request.getPriority());
         			if (status == null || status.hasOption(Option.waitlist)) {
-        				if (request instanceof CourseRequest && ((CourseRequest)request).isWaitlist() && !Boolean.TRUE.equals(cd.getWaitlist())) {
+        				if (request instanceof CourseRequest && ((CourseRequest)request).isWaitlist() && !Boolean.TRUE.equals(cd.getWaitlist()))
         					cd.setWaitlistedTimeStamp(ts);
-        					cd.setWaitListSwapWithCourseOffering(null);
-        				}
         				cd.setWaitlist(request instanceof CourseRequest && ((CourseRequest)request).isWaitlist());
         				cd.setNoSub(false);
         			} else if (status.hasOption(Option.nosubs)) {
@@ -220,10 +218,8 @@ public class StudentSectioningDatabaseSaver extends StudentSectioningSaver {
         			} else {
         				CourseRequest cr = (CourseRequest)request;
         				if (status == null || status.hasOption(Option.waitlist)) {
-        					if (cr.isWaitlist() && !Boolean.TRUE.equals(cd.getWaitlist())) {
+        					if (cr.isWaitlist() && !Boolean.TRUE.equals(cd.getWaitlist()))
         						cd.setWaitlistedTimeStamp(ts);
-        						cd.setWaitListSwapWithCourseOffering(null);
-        					}
         					cd.setWaitlist(cr.isWaitlist());
         					cd.setNoSub(false);
         				} else if (status.hasOption(Option.nosubs)) {

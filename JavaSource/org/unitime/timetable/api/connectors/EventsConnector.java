@@ -304,7 +304,6 @@ public class EventsConnector extends ApiConnector {
 						location.setMessage(m.getLocation().getEventMessage());
 						location.setIgnoreRoomCheck(m.getLocation().isIgnoreRoomCheck());
 						location.setDisplayName(m.getLocation().getDisplayName());
-						location.setPartitionParentId(m.getLocation().getPartitionParentId());
 						meeting.setLocation(location);
 					}
 				}
@@ -321,7 +320,6 @@ public class EventsConnector extends ApiConnector {
 						location.setMessage(l.getEventMessage());
 						location.setIgnoreRoomCheck(l.isIgnoreRoomCheck());
 						location.setDisplayName(l.getDisplayName());
-						location.setPartitionParentId(l.getPartitionParentId());
 						meeting.setLocation(location);
 					}
 				}

@@ -740,16 +740,10 @@ public class DegreeWorksCourseRequests implements CourseRequestsProvider, Degree
 			try {
 				current = getDegreePlans(term, studentId, effectiveOnly, getDegreeWorksNrAttempts());
 			} catch (SectioningException e) {
-				if (helper.getAction().hasApiException())
-					helper.getAction().setApiException(helper.getAction().getApiException() + "\n" + e.getMessage());
-				else
-					helper.getAction().setApiException(e.getMessage());
+				helper.getAction().setApiException(e.getMessage());
 				throw e;
 			} finally {
-				if (helper.getAction().hasApiGetTime())
-					helper.getAction().setApiGetTime(helper.getAction().getApiGetTime() + System.currentTimeMillis() - t0);
-				else
-					helper.getAction().setApiGetTime(System.currentTimeMillis() - t0);
+				helper.getAction().setApiGetTime(System.currentTimeMillis() - t0);
 			}
 			if (current == null)
 				throw new SectioningException(getDegreeWorksNoPlansMessage()).withTypeInfo();

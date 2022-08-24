@@ -651,7 +651,7 @@ public class XOffering implements Serializable, Externalizable {
 	}
 	
 	public Course toCourse(Long courseId, XStudent student, OnlineSectioningServer server) {
-		Course course = toCourse(courseId, student, server.getExpectations(getOfferingId()), getDistributions(), server.getEnrollments(getOfferingId()), server.getAcademicSession().getDayOfWeekOffset());
+		Course course = toCourse(courseId, student, server.getExpectations(getOfferingId()), getDistributions(), server.getEnrollments(getOfferingId()));
 		if (!(server instanceof StudentSolver) && student != null) {
 			String filter = server.getConfig().getProperty("Load.OnlineOnlyStudentFilter", null);
 			if (filter != null && !filter.isEmpty()) {
@@ -707,7 +707,7 @@ public class XOffering implements Serializable, Externalizable {
 		return course;
 	}
 
-    public Course toCourse(Long courseId, XStudent student, XExpectations expectations, Collection<XDistribution> distributions, XEnrollments enrollments, int dayOfWeekOffset) {
+    public Course toCourse(Long courseId, XStudent student, XExpectations expectations, Collection<XDistribution> distributions, XEnrollments enrollments) {
 		Offering clonedOffering = new Offering(getOfferingId(), getName());
 		XCourse course = getCourse(courseId);
 		int courseLimit = course.getLimit();
@@ -768,11 +768,9 @@ public class XOffering implements Serializable, Externalizable {
 					clonedSection.setSpaceExpected(expectations == null ? 0.0 : expectations.getExpectedSpace(section.getSectionId()));
 					clonedSection.setEnrollment(enrl);
 					clonedSection.setCancelled(section.isCancelled());
-					clonedSection.setEnabled(section.isEnabledForScheduling());
-					clonedSection.setAlwaysEnabled(std);
+					clonedSection.setEnabled(std || section.isEnabledForScheduling());
 					clonedSection.setOnline(section.isOnline());
 					clonedSection.setPast(section.isPast());
-					clonedSection.setDayOfWeekOffset(dayOfWeekOffset);
 					if (distributions != null)
 						for (XDistribution distribution: distributions)
 							if (distribution.getDistributionType() == XDistributionType.IngoreConflicts && distribution.hasSection(section.getSectionId()))

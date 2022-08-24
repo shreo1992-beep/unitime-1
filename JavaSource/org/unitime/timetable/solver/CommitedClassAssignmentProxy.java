@@ -48,7 +48,6 @@ import org.unitime.timetable.model.InstrOfferingConfig;
 import org.unitime.timetable.model.InstructionalOffering;
 import org.unitime.timetable.model.Location;
 import org.unitime.timetable.model.Meeting;
-import org.unitime.timetable.model.Room;
 import org.unitime.timetable.model.SchedulingSubpart;
 import org.unitime.timetable.model.dao.Class_DAO;
 import org.unitime.timetable.model.dao.InstructionalOfferingDAO;
@@ -126,20 +125,6 @@ public class CommitedClassAssignmentProxy implements ClassAssignmentProxy {
 									if (!assignment.equals(a) && !a.getClazz().isCancelled() && assignment.overlaps(a) && !clazz.canShareRoom(a.getClazz()))
 										return true;
 			            	}
-							if (room instanceof Room) {
-								Room r = (Room)room;
-								if (r.getParentRoom() != null && !r.getParentRoom().isIgnoreRoomCheck()) {
-									for (Assignment a : r.getParentRoom().getCommitedAssignments())
-										if (!assignment.equals(a) && !a.getClazz().isCancelled() && assignment.overlaps(a) && !clazz.canShareRoom(a.getClazz()))
-											return true;
-								}
-								for (Room p: r.getPartitions()) {
-									if (!p.isIgnoreRoomCheck())
-										for (Assignment a : p.getCommitedAssignments())
-											if (!assignment.equals(a) && !a.getClazz().isCancelled() && assignment.overlaps(a) && !clazz.canShareRoom(a.getClazz()))
-												return true;
-								}
-							}
 			            }
 					
 					if (clazz.getClassInstructors() != null)
@@ -270,20 +255,6 @@ public class CommitedClassAssignmentProxy implements ClassAssignmentProxy {
 						if (!assignment.equals(a) && !a.getClazz().isCancelled() && assignment.overlaps(a) && !clazz.canShareRoom(a.getClazz()))
 							conflicts.add(a);
             	}
-				if (room instanceof Room) {
-					Room r = (Room)room;
-					if (r.getParentRoom() != null && !r.getParentRoom().isIgnoreRoomCheck()) {
-						for (Assignment a : r.getParentRoom().getCommitedAssignments())
-							if (!assignment.equals(a) && !a.getClazz().isCancelled() && assignment.overlaps(a) && !clazz.canShareRoom(a.getClazz()))
-								conflicts.add(a);
-					}
-					for (Room p: r.getPartitions()) {
-						if (!p.isIgnoreRoomCheck())
-							for (Assignment a : p.getCommitedAssignments())
-								if (!assignment.equals(a) && !a.getClazz().isCancelled() && assignment.overlaps(a) && !clazz.canShareRoom(a.getClazz()))
-									conflicts.add(a);
-					}
-				}
             }
 		
 		if (clazz.getClassInstructors() != null)

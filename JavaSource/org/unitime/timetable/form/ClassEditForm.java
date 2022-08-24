@@ -109,7 +109,6 @@ public class ClassEditForm extends PreferencesForm {
     private String defaultTeachingResponsibilityId;
     private String lms;
     private String fundingDept;
-    private Boolean datePatternEditable;
     
     // --------------------------------------------------------- Classes
 
@@ -289,7 +288,6 @@ public class ClassEditForm extends PreferencesForm {
         defaultTeachingResponsibilityId = (tr == null ? "" : tr.getUniqueId().toString());
         lms = null;
         fundingDept = null;
-        datePatternEditable = false;
 
         super.reset(mapping, request);
     }
@@ -776,8 +774,5 @@ public class ClassEditForm extends PreferencesForm {
 	public void setFundingDept(String fundingDept) {
 		this.fundingDept = fundingDept;
 	}
-
-	public Boolean getDatePatternEditable() { return datePatternEditable; }
-	public Boolean isDatePatternEditable() { return datePatternEditable; }
-    public void setDatePatternEditable(Boolean datePatternEditable) { this.datePatternEditable = datePatternEditable; }
+	
 }

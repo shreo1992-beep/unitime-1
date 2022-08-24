@@ -43,7 +43,6 @@ import org.cpsolver.studentsct.model.Instructor;
 import org.cpsolver.studentsct.model.Section;
 import org.infinispan.commons.marshall.Externalizer;
 import org.infinispan.commons.marshall.SerializeWith;
-import org.unitime.timetable.gwt.shared.CourseRequestInterface.Preference;
 import org.unitime.timetable.gwt.shared.CourseRequestInterface.RequestedCourse;
 import org.unitime.timetable.gwt.shared.OnlineSectioningInterface.WaitListMode;
 import org.unitime.timetable.model.AdvisorClassPref;
@@ -85,7 +84,6 @@ public class XCourseRequest extends XRequest {
     private Map<XCourseId, XOverride> iOverrides = null;
     private int iCritical = 0;
     private Date iWaitListedTimeStamp = null;
-    private XCourseId iWaitListSwapWithCourseOffering = null;
 
     public XCourseRequest() {}
     
@@ -176,8 +174,6 @@ public class XCourseRequest extends XRequest {
         	if (message != null)
         		iMessage = message.getMessage();
         }
-        if (demand.getWaitListSwapWithCourseOffering() != null)
-        	iWaitListSwapWithCourseOffering = new XCourseId(demand.getWaitListSwapWithCourseOffering());
     }
     
     public XCourseRequest(Student student, CourseOffering course, int priority, OnlineSectioningHelper helper, Collection<StudentClassEnrollment> classes) {
@@ -198,17 +194,6 @@ public class XCourseRequest extends XRequest {
         	iTimeStamp = new Date();
     }
     
-    public XCourseRequest(CourseRequest cr, OnlineSectioningHelper helper, Collection<StudentClassEnrollment> classes) {
-    	this(cr.getCourseDemand().getStudent(), cr.getCourseOffering(), cr.getOrder(), helper, classes);
-    	if (cr.getPreferences() != null && !cr.getPreferences().isEmpty()) {
-    		List<XPreference> prefs = new ArrayList<XPreference>();
-    		for (StudentSectioningPref p: cr.getPreferences())
-    			prefs.add(new XPreference(cr, p));
-    		iPreferences = new HashMap<XCourseId, List<XPreference>>();
-    		iPreferences.put(new XCourseId(cr.getCourseOffering()), prefs);
-    	}
-    }
-    
     public XCourseRequest(Student student, XCourseId course, int priority, XEnrollment enrollment) {
     	super();
     	iStudentId = student.getUniqueId();
@@ -226,7 +211,7 @@ public class XCourseRequest extends XRequest {
         	iTimeStamp = new Date();
     }
     
-    public XCourseRequest(XStudent student, XCourseId course, RequestedCourse rc) {
+    public XCourseRequest(XStudent student, XCourseId course) {
     	super();
     	iStudentId = student.getStudentId();
     	iRequestId = -course.getCourseId();
@@ -237,19 +222,6 @@ public class XCourseRequest extends XRequest {
         iNoSub = false;
         iCritical = 0;
         iTimeStamp = new Date();
-        if (rc != null) {
-        	List<XPreference> prefs = new ArrayList<XPreference>();
-        	if (rc.hasSelectedClasses())
-        		for (Preference p: rc.getSelectedClasses())
-        			prefs.add(new XPreference(p, XPreferenceType.SECTION));
-        	if (rc.hasSelectedIntructionalMethods())
-        		for (Preference p: rc.getSelectedIntructionalMethods())
-        			prefs.add(new XPreference(p, XPreferenceType.INSTR_METHOD));
-        	if (!prefs.isEmpty()) {
-        		iPreferences = new HashMap<XCourseId, List<XPreference>>();
-        		iPreferences.put(course, prefs);
-        	}
-        }
     }
     
     public XCourseRequest(XCourseRequest request, XEnrollment enrollment) {
@@ -330,19 +302,6 @@ public class XCourseRequest extends XRequest {
      */
     public List<XCourseId> getCourseIds() {
         return iCourseIds;
-    }
-    
-    public int getIndex(XOffering offering) {
-    	for (int i = 0; i < iCourseIds.size(); i++)
-    		if (iCourseIds.get(i).getOfferingId().equals(offering.getOfferingId())) return i;
-    	return -1;
-    }
-    
-    public XCourseId getWaitListSwapWithCourseOffering() {
-    	return iWaitListSwapWithCourseOffering;
-    }
-    public void setWaitListSwapWithCourseOffering(XCourseId courseId) {
-    	iWaitListSwapWithCourseOffering = courseId;
     }
     
     /**
@@ -461,9 +420,6 @@ public class XCourseRequest extends XRequest {
     
     public Date getWaitListedTimeStamp() {
     	return iWaitListedTimeStamp;
-    }
-    public void setWaitListedTimeStamp(Date ts) {
-    	iWaitListedTimeStamp = ts;
     }
     
     /** Return enrollment, if enrolled */
@@ -599,52 +555,6 @@ public class XCourseRequest extends XRequest {
     		}
     }
     
-    public boolean isRequired(XEnrollment enrollment, XOffering offering) {
-    	List<XPreference> prefs = getPreferences(enrollment);
-    	if (prefs == null || prefs.isEmpty()) return true;
-        XConfig config = offering.getConfig(enrollment.getConfigId());
-        // check all sections
-        for (XSection section: offering.getSections(enrollment)) {
-            boolean hasConfig = false, hasMatchingConfig = false;
-            boolean hasSubpart = false, hasMatchingSection = false;
-            boolean hasSectionReq = false;
-            for (XPreference choice: prefs) {
-            	// only check required choices
-            	if (!choice.isRequired()) continue;
-
-                // has config -> check config
-            	if (choice.getType() == XPreferenceType.INSTR_METHOD) {
-            		hasConfig = true;
-            		if (config.getInstructionalMethod() != null && choice.getUniqueId().equals(config.getInstructionalMethod().getUniqueId()))
-            			hasMatchingConfig = true;
-            	}
-
-            	// has section of the matching subpart -> check section
-            	if (choice.getType() == XPreferenceType.SECTION) {
-            		XSection reqSection = offering.getSection(choice.getUniqueId());
-                    hasSectionReq = true;
-                    if (reqSection.getSubpartId().equals(section.getSubpartId())) {
-                        hasSubpart = true;
-                        if (reqSection.equals(section)) hasMatchingSection = true;
-                    } else if (!hasMatchingConfig) {
-                        for (XSubpart subpart: config.getSubparts()) {
-                            if (reqSection.getSubpartId().equals(subpart.getSubpartId())) {
-                                hasMatchingConfig = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            if (hasConfig && !hasMatchingConfig) return false;
-            if (hasSubpart && !hasMatchingSection) return false;
-            // no match, but there are section requirements for a different config -> not satisfied 
-            if (!hasMatchingConfig && !hasMatchingSection && hasSectionReq) return false;
-        }
-        return true;
-    }
-    
     public String getEnrollmentMessage() { return iMessage; }
     
     public void setEnrollmentMessage(String message) { iMessage = message; }
@@ -756,9 +666,6 @@ public class XCourseRequest extends XRequest {
         }
         
         iCritical = in.readInt();
-        iWaitListSwapWithCourseOffering = null;
-        if (in.readBoolean())
-        	iWaitListSwapWithCourseOffering = new XCourseId(in);
 	}
 
 	@Override
@@ -822,9 +729,6 @@ public class XCourseRequest extends XRequest {
 			}
 		
 		out.writeInt(iCritical);
-		out.writeBoolean(iWaitListSwapWithCourseOffering != null);
-		if (iWaitListSwapWithCourseOffering != null)
-			iWaitListSwapWithCourseOffering.writeExternal(out);
 	}
 	
 	public static class XCourseRequestSerializer implements Externalizer<XCourseRequest> {
@@ -897,13 +801,6 @@ public class XCourseRequest extends XRequest {
 			if (iLabel.length() <= 4)
 				iLabel = a.getSubpart().getName() + " " + iLabel;
 			iRequired = required;
-		}
-		
-		public XPreference(Preference p, XPreferenceType type) {
-			iType = type;
-			iId = p.getId();
-			iLabel = p.getText();
-			iRequired = p.isRequired();
 		}
 		
 		public XPreference(ObjectInput in) throws IOException, ClassNotFoundException {

@@ -20,11 +20,9 @@
 package org.unitime.timetable.onlinesectioning.updates;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.unitime.localization.impl.Localization;
 import org.unitime.timetable.gwt.resources.StudentSectioningMessages;
@@ -48,7 +46,6 @@ public class ExpireReservationsAction extends CheckOfferingAction {
 
 	@Override
 	public Boolean execute(OnlineSectioningServer server, OnlineSectioningHelper helper) {
-		Set<Long> recheck = new HashSet<Long>();
 		helper.beginTransaction();
 		try {
 			helper.info("Checking for expired reservations..."); 
@@ -73,7 +70,7 @@ public class ExpireReservationsAction extends CheckOfferingAction {
 			}
 			helper.commitTransaction();
 			for (Map.Entry<XOffering, List<XReservation>> entry: reservations2expire.entrySet()) {
-				expireReservation(entry.getKey(), entry.getValue(), recheck, server, helper);
+				expireReservation(entry.getKey(), entry.getValue(), server, helper);
 			}
 		} catch (Exception e) {
 			helper.rollbackTransaction();
@@ -81,16 +78,10 @@ public class ExpireReservationsAction extends CheckOfferingAction {
 				throw (SectioningException)e;
 			throw new SectioningException(MSG.exceptionUnknown(e.getMessage()), e);
 		}
-		
-		if (!recheck.isEmpty()) {
-			helper.info("Re-checking " + recheck.size() + " offerings...");
-			server.execute(server.createAction(CheckOfferingAction.class).forOfferings(recheck), helper.getUser());
-		}
-		
 		return true;
 	}
 	
-	public void expireReservation(XOffering offering, List<XReservation> reservations, Set<Long> recheckOfferingIds, OnlineSectioningServer server, OnlineSectioningHelper helper) {
+	public void expireReservation(XOffering offering, List<XReservation> reservations, OnlineSectioningServer server, OnlineSectioningHelper helper) {
 		// offering is locked -> assuming that the offering will get checked when it is unlocked
 		if (server.isOfferingLocked(offering.getOfferingId())) return;
 		
@@ -109,7 +100,7 @@ public class ExpireReservationsAction extends CheckOfferingAction {
 
 			if (server.getAcademicSession().isSectioningEnabled()) {
 				// Re-check offering
-				checkOffering(server, helper, offering, recheckOfferingIds);
+				checkOffering(server, helper, offering);
 				// Update enrollment counters
 				// updateEnrollmentCounters(server, helper, offering);
 			}

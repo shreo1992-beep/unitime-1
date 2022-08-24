@@ -83,7 +83,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 	private Boolean displayEnabledForStudentScheduling;
 	private Long instructionalMethod;
 	private String instructionalMethodDefault;
-	private boolean instructionalMethodEditable;
 	private Boolean editSnapshotLimits;
 	private Boolean displayLms;
 	
@@ -93,7 +92,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 	private List mustHaveChildClasses;
 	private List parentClassIds;
 	private List readOnlyClasses;
-	private List readOnlyDatePatterns;
 	private List classLabels;
 	private List classLabelIndents;
 	private List enrollments;
@@ -136,7 +134,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 	private static String ITYPES_TOKEN = "itypes";
 	private static String MUST_HAVE_CHILD_CLASSES_TOKEN = "mustHaveChildClasses";
 	private static String READ_ONLY_CLASSES_TOKEN = "readOnlyClasses";
-	private static String READ_ONLY_DATE_PATTERNS_TOKEN = "readOnlyDatePatterns";
 	private static String CLASS_LABELS_TOKEN = "classLabels";
 	private static String CLASS_LABEL_INDENTS_TOKEN = "classLabelIndents";
 	private static String ENROLLMENTS_TOKEN = "enrollments";
@@ -500,7 +497,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
     	displayAllClassesInstructors = "";
     	instructionalMethod = null;
     	instructionalMethodDefault = null;
-    	instructionalMethodEditable = false;
     	displayLms = Boolean.valueOf(false);
     	resetLists();
     }
@@ -512,7 +508,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
     	mustHaveChildClasses = DynamicList.getInstance(new ArrayList(), factoryClasses);
     	parentClassIds = DynamicList.getInstance(new ArrayList(), factoryClasses);
     	readOnlyClasses = DynamicList.getInstance(new ArrayList(), factoryClasses);
-    	readOnlyDatePatterns = DynamicList.getInstance(new ArrayList(), factoryClasses);
        	classHasErrors = DynamicList.getInstance(new ArrayList(), factoryClasses);
        	classLabels = DynamicList.getInstance(new ArrayList(), factoryClasses);
        	classLabelIndents = DynamicList.getInstance(new ArrayList(), factoryClasses);
@@ -872,13 +867,7 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 	}
 	public void setReadOnlyClasses(List readOnlyClasses) {
 		this.readOnlyClasses = readOnlyClasses;
-	}
-	public List getReadOnlyDatePatterns() {
-		return readOnlyDatePatterns;
-	}
-	public void setReadOnlyDatePatterns(List readOnlyDatePatterns) {
-		this.readOnlyDatePatterns = readOnlyDatePatterns;
-	}
+	}	
 	public Long getInstrOfferingId() {
 		return instrOfferingId;
 	}
@@ -924,7 +913,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 		Iterator it23 = this.canCancel.listIterator();
 		Iterator it24 = this.isCancelled.listIterator();
 		Iterator it25 = this.snapshotLimits.listIterator();
-		Iterator it26 = this.readOnlyDatePatterns.listIterator();
 		boolean canRemoveFromDisplayInstructors;
 		boolean canRemoveFromEnableForStudentScheduling;
 		boolean canRemoveFromEnrollment;
@@ -941,7 +929,7 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 			it9.next();
 			it10.next();
 			it11.next();
-			it12.next();
+			it12.next();			
 			if (it13.hasNext()){
 				it13.next();
 				canRemoveFromDisplayInstructors = true;
@@ -970,7 +958,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 			it23.next();
 			it24.next();
 			it25.next();
-			it26.next();
 			if (cls1.equals(classId)){				
 				it1.remove();
 				it2.remove();
@@ -1001,7 +988,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 				it23.remove();
 				it24.remove();
 				it25.remove();
-				it26.remove();
 			} else if (pCls1.equals(classId)){
 				classesToDel.add(cls1);
 			}
@@ -1014,7 +1000,7 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 	}
 	    
 	public void addToClasses(Class_ cls, Boolean isReadOnly, String indent, ClassAssignmentProxy proxy, 
-			String nameFormat, boolean canDelete, boolean canCancel, Boolean isReadOnlyDatePattern){
+			String nameFormat, boolean canDelete, boolean canCancel){
 		this.classLabels.add(cls.htmlLabel());
 		this.classLabelIndents.add(indent);
 		this.classIds.add(cls.getUniqueId().toString());
@@ -1026,7 +1012,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 			this.mustHaveChildClasses.add(Boolean.valueOf(false));			
 		}
 		this.readOnlyClasses.add(isReadOnly.toString());
-		this.readOnlyDatePatterns.add(isReadOnlyDatePattern.toString());
 		this.classHasErrors.add(Boolean.valueOf(false).toString());	
 		this.enrollments.add(StudentClassEnrollment.sessionHasEnrollments(cls.getSessionId())?(cls.getEnrollment()==null?"0":cls.getEnrollment().toString()):"");
 		if(isInstrOffrConfigUnlimited()) {
@@ -1128,7 +1113,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 		hm.put(CLASS_LABEL_INDENTS_TOKEN, this.getClassLabelIndents());
 		hm.put(PARENT_CLASS_IDS_TOKEN, this.getParentClassIds());
 		hm.put(READ_ONLY_CLASSES_TOKEN, this.getReadOnlyClasses());
-		hm.put(READ_ONLY_DATE_PATTERNS_TOKEN, this.getReadOnlyDatePatterns());
 		hm.put(ENROLLMENTS_TOKEN, this.getEnrollments());
 		hm.put(SNAPSHOT_LIMITS_TOKEN, this.getSnapshotLimits());
 		hm.put(MIN_CLASS_LIMITS_TOKEN, this.getMinClassLimits());
@@ -1177,7 +1161,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 		this.getClassLabelIndents().add((String) getObjectFromListMapAtIndex(originalClassesMap, CLASS_LABEL_INDENTS_TOKEN, classIndex));
 		this.getParentClassIds().add((String) getObjectFromListMapAtIndex(originalClassesMap, PARENT_CLASS_IDS_TOKEN, classIndex));
 		this.getReadOnlyClasses().add((String) getObjectFromListMapAtIndex(originalClassesMap, READ_ONLY_CLASSES_TOKEN, classIndex));
-		this.getReadOnlyDatePatterns().add((String) getObjectFromListMapAtIndex(originalClassesMap, READ_ONLY_DATE_PATTERNS_TOKEN, classIndex));
 		this.getEnrollments().add((String) getObjectFromListMapAtIndex(originalClassesMap, ENROLLMENTS_TOKEN, classIndex));
 		this.getSnapshotLimits().add((String) getObjectFromListMapAtIndex(originalClassesMap, SNAPSHOT_LIMITS_TOKEN, classIndex));
 		this.getMinClassLimits().add((String) getObjectFromListMapAtIndex(originalClassesMap, MIN_CLASS_LIMITS_TOKEN, classIndex));
@@ -1338,7 +1321,6 @@ public class InstructionalOfferingModifyForm extends ActionForm {
 		this.mustHaveChildClasses.add(this.getMustHaveChildClasses().get(index).toString());
 		this.parentClassIds.add((parentClassId != null)?parentClassId.toString():"");
 		this.readOnlyClasses.add(Boolean.valueOf(false).toString());
-		this.readOnlyDatePatterns.add(Boolean.valueOf(false).toString());
 		this.enrollments.add("");
 		this.snapshotLimits.add("");
 		this.minClassLimits.add(this.getMinClassLimits().get(index));
@@ -1775,17 +1757,5 @@ public class InstructionalOfferingModifyForm extends ActionForm {
     		if (type.isVisible() || type.getUniqueId().equals(instructionalMethod))
     			ret.add(new IdValue(type.getUniqueId(), type.getLabel()));
     	return ret;
-    }
-    public boolean isInstructionalMethodEditable() { return instructionalMethodEditable; }
-    public void setInstructionalMethodEditable(boolean instructionalMethodEditable) { this.instructionalMethodEditable = instructionalMethodEditable; }
-    public String getInstructionalMethodLabel() {
-    	if (instructionalMethod != null) {
-    		for (InstructionalMethod type: InstructionalMethod.findAll())
-        		if (type.getUniqueId().equals(instructionalMethod))
-        			return type.getLabel();
-    		
-    	}
-		if (instructionalMethodDefault == null) return MSG.selectNoInstructionalMethod();
-		else return MSG.defaultInstructionalMethod(instructionalMethodDefault);
     }
 }

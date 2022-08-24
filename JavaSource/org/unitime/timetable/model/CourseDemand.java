@@ -44,7 +44,6 @@ public class CourseDemand extends BaseCourseDemand implements Comparable {
 		NORMAL(RequestPriority.Normal),
 		CRITICAL(RequestPriority.Critical),
 		IMPORTANT(RequestPriority.Important),
-		VITAL(RequestPriority.Vital),
 		;
 		
 		RequestPriority iPriority;
@@ -58,16 +57,6 @@ public class CourseDemand extends BaseCourseDemand implements Comparable {
 			for (Critical c: Critical.values())
 				if (c.toRequestPriority() == rp) return c;
 			return Critical.NORMAL;
-		}
-		public static Critical fromText(String text) {
-			if ("Critical".equalsIgnoreCase(text))
-				return Critical.CRITICAL;
-			else if ("Important".equalsIgnoreCase(text))
-				return Critical.IMPORTANT;
-			else if ("Vital".equalsIgnoreCase(text))
-				return Critical.VITAL;
-			else
-				return Critical.NORMAL;
 		}
 	}
 
@@ -169,8 +158,6 @@ public class CourseDemand extends BaseCourseDemand implements Comparable {
     		return true;
     	case IMPORTANT:
     		return true;
-    	case VITAL:
-    		return true;
     	default:
     		return false;
     	}
@@ -202,30 +189,10 @@ public class CourseDemand extends BaseCourseDemand implements Comparable {
     	return false;
     }
     
-    public boolean isEnrolled(boolean checkSectionSwap) {
+    public boolean isEnrolled() {
     	for (CourseRequest cr: getCourseRequests())
-        	for (StudentClassEnrollment e: getStudent().getClassEnrollments())
-    			if (cr.getCourseOffering().equals(e.getCourseOffering())) {
-    				if (checkSectionSwap && e.getCourseOffering().equals(cr.getCourseDemand().getWaitListSwapWithCourseOffering()) && !cr.isRequired())
-    					return false; // section swap which requirements have not been met -> considered not wait-listed
-    				return true;
-    			}
-    	return false;
-    }
-    
-    public CourseOffering getEnrolledCourse() {
-    	for (CourseRequest cr: getCourseRequests())
-        	for (StudentClassEnrollment e: getStudent().getClassEnrollments())
-    			if (cr.getCourseOffering().equals(e.getCourseOffering())) return cr.getCourseOffering();
-    	return null;
-    }
-    
-    public boolean isEnrolledExceptForWaitListSwap() {
-    	for (CourseRequest cr: getCourseRequests()) {
-    		if (cr.getCourseOffering().equals(getWaitListSwapWithCourseOffering())) continue;
         	for (StudentClassEnrollment e: getStudent().getClassEnrollments())
     			if (cr.getCourseOffering().equals(e.getCourseOffering())) return true;
-    	}
     	return false;
     }
     
@@ -237,12 +204,5 @@ public class CourseDemand extends BaseCourseDemand implements Comparable {
     	} else {
     		return false;
     	}
-    }
-    
-    public CourseRequest getCourseRequest(Long courseOfferingId) {
-    	if (courseOfferingId == null || getCourseRequests() == null || getCourseRequests().isEmpty()) return null;
-    	for (CourseRequest cr: getCourseRequests())
-    		if (cr.getCourseOffering().getUniqueId().equals(courseOfferingId)) return cr;
-    	return null;
     }
 }

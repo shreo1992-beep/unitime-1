@@ -98,7 +98,7 @@ public class WaitListCheckValidation implements OnlineSectioningAction<CheckCour
 		}
 		
 		if (iSubmitIfNoConfims && !response.isConfirm()) {
-			iRequest.addConfirmations(response.getMessages());
+			iRequest.setConfirmations(response.getMessages());
 			new WaitListSubmitOverrides().withRequest(iRequest).execute(server, helper);
 		}
 		

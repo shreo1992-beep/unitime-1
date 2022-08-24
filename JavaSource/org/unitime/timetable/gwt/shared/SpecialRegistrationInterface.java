@@ -61,6 +61,7 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 		private boolean iSpecRegDeadlineConfs = false;
 		private boolean iSpecRegChangeRequestNote = false;
 		private SpecialRegistrationStatus iSpecRegStatus = null;
+		private String iNote;
 		private String iDisclaimer;
 		private boolean iCanRequire = true;
 		private ChangeRequestorNoteInterface iChangeRequestorNote = null;
@@ -78,6 +79,7 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 			iSpecRegLinkedConfs = cx.iSpecRegLinkedConfs;
 			iSpecRegDeadlineConfs = cx.iSpecRegDeadlineConfs;
 			iSpecRegStatus = cx.iSpecRegStatus;
+			iNote = cx.iNote;
 			iCanRequire = cx.iCanRequire;
 			iSpecRegChangeRequestNote = cx.iSpecRegChangeRequestNote;
 		}
@@ -100,6 +102,8 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 
 		public SpecialRegistrationStatus getStatus() { return iSpecRegStatus; }
 		public void setStatus(SpecialRegistrationStatus status) { iSpecRegStatus = status; }
+		public String getNote() { return iNote; }
+		public void setNote(String note) { iNote = note; }
 		public String getDisclaimer() { return iDisclaimer; }
 		public void setDisclaimer(String disclaimer) { iDisclaimer = disclaimer; }
 		public boolean hasDisclaimer() { return iDisclaimer != null && !iDisclaimer.isEmpty(); }
@@ -118,6 +122,7 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 			iSpecRegChangeRequestNote = check != null && check.hasFlag(EligibilityFlag.SR_CHANGE_NOTE);
 		}
 		public void reset() {
+			iNote = null;
 			iSpecReg = false;
 			iSpecRegRequestId = null;
 			iSpecRegDisclaimerAccepted = false;
@@ -273,7 +278,7 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 		private Date iSubmitDate;
 		private String iRequestId;
 		private String iDescription;
-		private Map<String, String> iNotes;
+		private String iNote;
 		private List<ClassAssignmentInterface.ClassAssignment> iChanges;
 		private boolean iCanCancel = false;
 		private boolean iHasTimeConflict, iHasSpaceConflict, iExtended, iHasLinkedConflict;
@@ -293,27 +298,8 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 		public String getDescription() { return iDescription; }
 		public void setDescription(String description) { iDescription = description; }
 		
-		public String getNote(String course) {
-			if (iNotes == null) return null;
-			String note = iNotes.get(course);
-			if (note != null) return note;
-			return iNotes.get("");
-		}
-		public void setNote(String course, String note) {
-			if (note == null || note.isEmpty()) return;
-			if (iNotes == null) iNotes = new HashMap<String, String>();
-			iNotes.put(course, note);
-		}
-		
-		public void setNote(Long courseId, String note) {
-			if (courseId == null) setNote("MAXI", note);
-			if (iChanges != null)
-				for (ClassAssignmentInterface.ClassAssignment ca: iChanges)
-					if (courseId.equals(ca.getCourseId())) {
-						setNote(ca.getCourseName(), note);
-						break;
-					}
-		}
+		public String getNote() { return iNote; }
+		public void setNote(String note) { iNote = note; }
 		
 		public SpecialRegistrationStatus getStatus() { return iStatus; }
 		public void setStatus(SpecialRegistrationStatus status) { iStatus = status; }
@@ -570,20 +556,6 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 			return iErrors != null && !iErrors.isEmpty();
 		}
 		public ArrayList<ErrorMessage> getErrors() { return iErrors; }
-		public boolean hasErrors(String course) {
-			if (iErrors == null) return false;
-			for (ErrorMessage em: iErrors) {
-				if (course.equals(em.getCourse())) return true;
-			}
-			return false;
-		}
-		public boolean hasErrorCode(String code) {
-			if (iErrors == null) return false;
-			for (ErrorMessage em: iErrors) {
-				if (code.equals(em.getCode())) return true;
-			}
-			return false;
-		}
 		
 		public void setMaxCredit(Float maxCredit) { iMaxCredit = maxCredit; }
 		public Float getMaxCredit() { return iMaxCredit; }
@@ -621,19 +593,18 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 		private CourseRequestInterface iCourses;
 		private Collection<ClassAssignmentInterface.ClassAssignment> iClassAssignments;
 		private ArrayList<ErrorMessage> iErrors = null;
-		private Map<String, String> iNote;
+		private String iNote;
 		private Float iCredit;
 		
 		public SubmitSpecialRegistrationRequest() {}
-		public SubmitSpecialRegistrationRequest(StudentSectioningContext cx, String requestId, CourseRequestInterface courses, Collection<ClassAssignmentInterface.ClassAssignment> assignments, Collection<ErrorMessage> errors, Map<String, String> note, Float credit) {
+		public SubmitSpecialRegistrationRequest(StudentSectioningContext cx, String requestId, CourseRequestInterface courses, Collection<ClassAssignmentInterface.ClassAssignment> assignments, Collection<ErrorMessage> errors, String note, Float credit) {
 			super(cx);
 			iRequestId = requestId;
 			iCourses = courses;
 			iClassAssignments = assignments;
 			if (errors != null)
 				iErrors = new ArrayList<ErrorMessage>(errors);
-			if (note != null)
-				iNote = new HashMap<String, String>(note);
+			iNote = note;
 			iCredit = credit;
 		}
 		
@@ -651,15 +622,8 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 			return iErrors != null && !iErrors.isEmpty();
 		}
 		public ArrayList<ErrorMessage> getErrors() { return iErrors; }
-		public String getNote(String course) {
-			if (iNote == null) return null;
-			return iNote.get(course);
-		}
-		public void setNote(String course, String note) {
-			if (iNote == null) iNote = new HashMap<String, String>();
-			iNote.put(course, note);
-		}
-		public Map<String, String> getNotes() { return iNote; }
+		public String getNote() { return iNote; }
+		public void setNote(String note) { iNote = note; }
 		public void setCredit(Float credit) { iCredit = credit; }
 		public boolean hasCredit() { return iCredit != null; }
 		public Float getCredit() { return iCredit; }
@@ -900,7 +864,7 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 		private String iOriginalGradeMode = null;
 		private String iSelectedGradeMode = null;
 		private String iSelectedGradeModeDescription = null;
-		private String iNote;
+		
 		
 		public SpecialRegistrationGradeModeChange() {}
 		
@@ -936,10 +900,6 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 			iApprovals.add(app);
 		}
 		public Set<String> getApprovals() { return iApprovals; }
-		
-		public void setNote(String note) { iNote = note; }
-		public String getNote() { return iNote; }
-		public boolean hasNote() { return iNote != null && !iNote.isEmpty(); }
 	}
 	
 	public static class SpecialRegistrationCreditChange implements IsSerializable, Serializable {
@@ -947,7 +907,6 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 		private String iSubject, iCourse, iCrn;
 		private Float iCredit, iOriginalCredit;
 		private Set<String> iApprovals = null;
-		private String iNote;
 		
 		public SpecialRegistrationCreditChange() {}
 		
@@ -972,10 +931,7 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 			iApprovals.add(app);
 		}
 		public Set<String> getApprovals() { return iApprovals; }
-		
-		public void setNote(String note) { iNote = note; }
-		public String getNote() { return iNote; }
-		public boolean hasNote() { return iNote != null && !iNote.isEmpty(); }
+
 	}
 	
 	public static class SpecialRegistrationVariableCreditChange implements IsSerializable, Serializable {
@@ -1004,8 +960,8 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 		private static final long serialVersionUID = 1L;
 		List<SpecialRegistrationGradeModeChange> iChanges = new ArrayList<SpecialRegistrationGradeModeChange>();
 		List<SpecialRegistrationCreditChange> iCreditChanges = new ArrayList<SpecialRegistrationCreditChange>();
-		private Float iMaxCredit, iCurrentCredit;
 		private String iNote;
+		private Float iMaxCredit, iCurrentCredit;
 		
 		public ChangeGradeModesRequest() {}
 		public ChangeGradeModesRequest(StudentSectioningContext cx) {
@@ -1060,15 +1016,15 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 			return false;
 		}
 		
+		public void setNote(String note) { iNote = note; }
+		public String getNote() { return iNote; }
+		public boolean hasNote() { return iNote != null && !iNote.isEmpty(); }
+		
 		public Float getMaxCredit() { return iMaxCredit; }
 		public void setMaxCredit(Float credit) { iMaxCredit = credit; }
 		
 		public Float getCurrentCredit() { return iCurrentCredit; }
 		public void setCurrentCredit(Float credit) { iCurrentCredit = credit; }
-		
-		public void setNote(String note) { iNote = note; }
-		public String getNote() { return iNote; }
-		public boolean hasNote() { return iNote != null && !iNote.isEmpty(); }
 	}
 	
 	public static class ChangeGradeModesResponse implements GwtRpcResponse, Serializable {
@@ -1129,20 +1085,18 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 	public static interface ChangeRequestorNoteInterface {
 		public boolean changeRequestorNote(RequestedCourse request);
 		public boolean changeRequestorCreditNote(CourseRequestInterface request);
-		public boolean changeRequestorNote(RetrieveSpecialRegistrationResponse registration, String course, Long courseId);
+		public boolean changeRequestorNote(RetrieveSpecialRegistrationResponse registration);
 	}
 	
 	public static class UpdateSpecialRegistrationRequest extends StudentSectioningContext implements IsSerializable, Serializable {
 		private static final long serialVersionUID = 1L;
 		private String iRequestId;
-		private Long iCourseId;
 		private String iNote;
 		private boolean iPreReg = false;
 		
 		public UpdateSpecialRegistrationRequest() {}
-		public UpdateSpecialRegistrationRequest(StudentSectioningContext cx, String requestId, Long courseId, String note, boolean preReg) {
+		public UpdateSpecialRegistrationRequest(StudentSectioningContext cx, String requestId, String note, boolean preReg) {
 			super(cx);
-			iCourseId = courseId;
 			iRequestId = requestId;
 			iNote = note;
 			iPreReg = preReg;
@@ -1150,8 +1104,6 @@ public class SpecialRegistrationInterface implements IsSerializable, Serializabl
 		
 		public String getRequestId() { return iRequestId; }
 		public void setRequestId(String requestId) { iRequestId = requestId; }
-		public Long getCourseId() { return iCourseId; }
-		public void setCourseId(Long courseId) { iCourseId = courseId; }
 		public String getNote() { return iNote; }
 		public void setNote(String note) { iNote = note; }
 		public boolean isPreReg() { return iPreReg; }

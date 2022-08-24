@@ -193,11 +193,6 @@ public class PeopleLookupBackend implements GwtRpcImplementation<PersonInterface
 					public String getAcademicTitle() {
 						return person.getAcademicTitle();
 					}
-					
-					@Override
-					public String getExternalUniqueId() {
-						return person.getId();
-					}
 				}));
 				if (!showEmail) person.setEmail(null);
 			}

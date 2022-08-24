@@ -285,7 +285,6 @@ public class EventDetailBackend extends EventAction<EventDetailRpcRequest, Event
     				location.setMessage(r.getEventMessage());
     				location.setIgnoreRoomCheck(r.isIgnoreRoomCheck());
     				location.setDisplayName(r.getDisplayName());
-    				location.setPartitionParentId(r.getPartitionParentId());
     				related.addLocation(location);
     			}
     		}
@@ -360,7 +359,6 @@ public class EventDetailBackend extends EventAction<EventDetailRpcRequest, Event
 				location.setMessage(r.getEventMessage());
 				location.setIgnoreRoomCheck(r.isIgnoreRoomCheck());
 				location.setDisplayName(r.getDisplayName());
-				location.setPartitionParentId(r.getPartitionParentId());
 				related.addLocation(location);
     		}
     		for (DepartmentalInstructor i: xe.getExam().getInstructors()) {
@@ -422,7 +420,6 @@ public class EventDetailBackend extends EventAction<EventDetailRpcRequest, Event
 		    				location.setMessage(r.getEventMessage());
 		    				location.setIgnoreRoomCheck(r.isIgnoreRoomCheck());
 		    				location.setDisplayName(r.getDisplayName());
-		    				location.setPartitionParentId(r.getPartitionParentId());
 		    				related.addLocation(location);
 		    			}
 		    		}
@@ -538,7 +535,6 @@ public class EventDetailBackend extends EventAction<EventDetailRpcRequest, Event
 		    				location.setMessage(r.getEventMessage());
 		    				location.setIgnoreRoomCheck(r.isIgnoreRoomCheck());
 		    				location.setDisplayName(r.getDisplayName());
-		    				location.setPartitionParentId(r.getPartitionParentId());
 		    				related.addLocation(location);
 		    			}
 		    		}
@@ -609,7 +605,7 @@ public class EventDetailBackend extends EventAction<EventDetailRpcRequest, Event
     	
     	// overlaps
     	Map<Long, Set<Meeting>> overlaps = new HashMap<Long, Set<Meeting>>();
-    	if (e.getUniqueId() != null) {
+    	if (e.getUniqueId() != null)
     		for (Object[] o: (List<Object[]>)EventDAO.getInstance().getSession().createQuery(
     				"select m.uniqueId, o from Event e inner join e.meetings m, Meeting o " +
     				"where e.uniqueId = :eventId and m.uniqueId != o.uniqueId and " +
@@ -626,25 +622,6 @@ public class EventDetailBackend extends EventAction<EventDetailRpcRequest, Event
 	    		}
 	    		overlapsThisMeeting.add(overlap);
 			}
-    		for (Object[] o: (List<Object[]>)EventDAO.getInstance().getSession().createQuery(
-    				"select m.uniqueId, o from Event e inner join e.meetings m, Meeting o, Room r1, Room r2 " +
-    				"where e.uniqueId = :eventId and m.uniqueId != o.uniqueId and " +
-    				"o.startPeriod < m.stopPeriod and o.stopPeriod > m.startPeriod and m.approvalStatus <= 1 and o.approvalStatus <= 1 and " +
-    				"m.locationPermanentId = r1.permanentId and o.locationPermanentId = r2.permanentId and m.meetingDate = o.meetingDate and " +
-    				"r1.session = :sessionId and (r1.parentRoom = r2 or r2.parentRoom = r1)")
-    				.setLong("eventId", e.getUniqueId())
-    				.setLong("sessionId", session.getUniqueId())
-    				.list()) {
-    			Long meetingId = (Long)o[0];
-	    		Meeting overlap = (Meeting)o[1];
-	    		Set<Meeting> overlapsThisMeeting = overlaps.get(meetingId);
-	    		if (overlapsThisMeeting == null) {
-	    			overlapsThisMeeting = new TreeSet<Meeting>();
-	    			overlaps.put(meetingId, overlapsThisMeeting);
-	    		}
-	    		overlapsThisMeeting.add(overlap);
-			}
-    	}
     		
     	Hashtable<Long, EventInterface> conflictingEvents = new Hashtable<Long, EventInterface>();
     	Set<Location> unavailableLocations = new HashSet<Location>();
@@ -687,7 +664,6 @@ public class EventDetailBackend extends EventAction<EventDetailRpcRequest, Event
 				location.setMessage(m.getLocation().getEventMessage());
 				location.setIgnoreRoomCheck(m.getLocation().isIgnoreRoomCheck());
 				location.setDisplayName(m.getLocation().getDisplayName());
-				location.setPartitionParentId(m.getLocation().getPartitionParentId());
 				meeting.setLocation(location);
 				if ((e instanceof SpecialEvent || e instanceof CourseEvent) && (meeting.getApprovalStatus() == ApprovalStatus.Approved || meeting.getApprovalStatus() == ApprovalStatus.Pending)) {
 					if (m.getLocation().getEventDepartment() != null && m.getLocation().getEventDepartment().isAllowEvents()) {
@@ -736,22 +712,7 @@ public class EventDetailBackend extends EventAction<EventDetailRpcRequest, Event
 					conflict.setEndOffset(overlap.getStopOffset() == null ? 0 : overlap.getStopOffset());
 					conflict.setApprovalDate(overlap.getApprovalDate());
 					conflict.setApprovalStatus(overlap.getApprovalStatus());
-					if (m.getLocation() != null && m.getLocation().equals(overlap.getLocation())) {
-						conflict.setLocation(meeting.getLocation());	
-					} else if (overlap.getLocation() != null) {
-						ResourceInterface location = new ResourceInterface();
-						location.setType(ResourceType.ROOM);
-						location.setId(overlap.getLocation().getUniqueId());
-						location.setName(overlap.getLocation().getLabel());
-						location.setSize(overlap.getLocation().getCapacity());
-						location.setRoomType(overlap.getLocation().getRoomTypeLabel());
-						location.setBreakTime(overlap.getLocation().getEffectiveBreakTime());
-						location.setMessage(overlap.getLocation().getEventMessage());
-						location.setIgnoreRoomCheck(overlap.getLocation().isIgnoreRoomCheck());
-						location.setDisplayName(overlap.getLocation().getDisplayName());
-						location.setPartitionParentId(overlap.getLocation().getPartitionParentId());
-						conflict.setLocation(location);
-					}
+					conflict.setLocation(meeting.getLocation());
 					
 					EventInterface confEvent = conflictingEvents.get(overlap.getEvent().getUniqueId());
 					if (confEvent == null) {
@@ -1064,7 +1025,6 @@ public class EventDetailBackend extends EventAction<EventDetailRpcRequest, Event
 			location.setMessage(rp.getRoom().getEventMessage());
 			location.setIgnoreRoomCheck(rp.getRoom().isIgnoreRoomCheck());
 			location.setDisplayName(rp.getRoom().getDisplayName());
-			location.setPartitionParentId(rp.getRoom().getPartitionParentId());
 			meeting.setLocation(location);
 			event.addMeeting(meeting);
 			locations.add(location);

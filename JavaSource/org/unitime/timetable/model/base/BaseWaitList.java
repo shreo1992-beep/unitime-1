@@ -47,7 +47,6 @@ public abstract class BaseWaitList implements Serializable {
 	private CourseOffering iCourseOffering;
 	private CourseOffering iEnrolledCourse;
 	private CourseDemand iCourseDemand;
-	private CourseOffering iSwapCourseOffering;
 
 	public static String PROP_UNIQUEID = "uniqueId";
 	public static String PROP_TYPE = "type";
@@ -106,9 +105,6 @@ public abstract class BaseWaitList implements Serializable {
 	public CourseDemand getCourseDemand() { return iCourseDemand; }
 	public void setCourseDemand(CourseDemand courseDemand) { iCourseDemand = courseDemand; }
 
-	public CourseOffering getSwapCourseOffering() { return iSwapCourseOffering; }
-	public void setSwapCourseOffering(CourseOffering swapCourseOffering) { iSwapCourseOffering = swapCourseOffering; }
-
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof WaitList)) return false;
 		if (getUniqueId() == null || ((WaitList)o).getUniqueId() == null) return false;
@@ -133,7 +129,6 @@ public abstract class BaseWaitList implements Serializable {
 			"\n	Enrollment: " + getEnrollment() +
 			"\n	Request: " + getRequest() +
 			"\n	Student: " + getStudent() +
-			"\n	SwapCourseOffering: " + getSwapCourseOffering() +
 			"\n	Timestamp: " + getTimestamp() +
 			"\n	Type: " + getType() +
 			"\n	UniqueId: " + getUniqueId() +
