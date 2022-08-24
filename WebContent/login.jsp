@@ -80,6 +80,21 @@
 	}
  %>		
 
+<script>
+function myFunction() {
+
+  var x = document.getElementById("lang").value;
+  window.location.href= location.protocol + '//' + location.host + location.pathname+"?locale="+x;
+
+  
+}
+</script>
+
+
+<loc:bundle name="CustomMessages">
+	
+	
+	
 <FORM name="f" action="<c:url value='login'/>" method="POST">
 	<INPUT type="hidden" name="cs" value="login">
 	<INPUT type="hidden" name="menu" value="<%=request.getParameter("menu") == null ? "" : request.getParameter("menu") %>">
@@ -89,32 +104,41 @@
 		<span class="mobile-menu-button" id='UniTimeGWT:MobileMenuButton'></span>
 		<span class='logo'><img src="images/unitime.png" border="0" alt="UniTime"></span>
 		<span class='header'>
-			<div class='h1'>University Timetabling</div>
-			<div class='h2'>Comprehensive Academic Scheduling Solutions</div>
+			<div class='h1'><loc:message name="loginh1"/></div>
+			<div class='h2'><loc:message name="loginh2"/></div>
 		</span>
 		<span class="mobile-menu" id='UniTimeGWT:MobileMenuPanel'></span>
 		<% if (errorMsg!=null)  { %><div class='error'><%= errorMsg %></div><% } %>
 		<c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION.message}">
-			<div class='error'>Authentication failed: <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.</div>
+			<div class='error'><loc:message name="error_failed"/>: <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.</div>
 		</c:if>
 		<span class='login'>
 			<div id="login">
 				<div class="BrownBG">
 					<div class="H40px"></div>
-					<div><label>Username:</label></div>
+					<div><label><loc:message name="username"/>:</label></div>
 					<div class="txtField"><input type='text' name='username' value='<c:if test="${not empty SPRING_SECURITY_LAST_USERNAME}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>' aria-label='Enter user name'/></div>
 					<div class="H20px"></div>
-					<div><label>Password:</label></div>
+					<div><label><loc:message name="password"/>:</label></div>
 					<div class="txtField"><input type='password' name='password' aria-label='Enter password'></div>
 				</div>
-				<div class="bottom"><img src="images/login_bg_2.jpg"/><input id="submit" name="submit" type="image" src="images/login_bg_3.jpg" border="0" align="top" value="log in" alt="Submit login information."><img src="images/login_bg_4.jpg"/></div>
+				<div class="bottom"><img src="images/login_bg_2.jpg"/><input id="submit" name="submit" type="submit" src="images/login_bg_3.jpg" border="0" align="top" value="<loc:message name="login"/>" alt="Submit login information."><img src="images/login_bg_4.jpg"/></div>
 			</div>
 		</span>
 		<c:if test="${SUGGEST_PASSWORD_RESET}">
-			<span class='forgot'><a href='gwt.jsp?page=password&reset=1' class='unitime-FooterLink'>Forgot your password?</a></span>
+			<span class='forgot'><a href='gwt.jsp?page=password&reset=1' class='unitime-FooterLink'><loc:message name="login_forgot"/>?</a></span>
 		</c:if>
+		<label for="language"><loc:message name="chooselanguage"/>:</label>
+
+<select name="lang" id="lang" onchange="myFunction()">
+<option value=""></option>
+  <option value="en"><loc:message name="english"/></option>
+  <option value="ar"><loc:message name="arabic"/></option>
+ 
+</select>
 	</span>
 </FORM>
+</loc:bundle>
 		
 		<%@ include file="/initializationError.jspf"%>
 		

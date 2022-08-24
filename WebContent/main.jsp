@@ -44,7 +44,8 @@
     <script type="text/javascript" language="javascript" src="unitime/unitime.nocache.js"></script>
 </head>
 <BODY class="unitime-Body">
-    <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex="-1" style="position:absolute;width:0;height:0;border:0"></iframe>
+<loc:bundle name="CustomMessages">    
+<iframe src="javascript:''" id="__gwt_historyFrame" tabIndex="-1" style="position:absolute;width:0;height:0;border:0"></iframe>
     <iframe src="javascript:''" id="__printingFrame" tabIndex="-1" style="position:absolute;width:0;height:0;border:0"></iframe>
 
 	<span class='top-menu'>
@@ -129,7 +130,7 @@
     			<span class="mobile-menu-button" id='UniTimeGWT:MobileMenuButton'></span>
     			<a href='main.jsp' tabIndex="-1" class="logo"></a>
     			<span class="content">
-					<span id='UniTimeGWT:Title' class="title">University Timetabling Application</span>
+					<span id='UniTimeGWT:Title' class="title"><loc:message name="University_timetabling_application"/></span>
 					<span class='unitime-Header'><span id='UniTimeGWT:Header' class="unitime-InfoPanel"></span></span>
 				</span>
 			</span>
@@ -138,7 +139,7 @@
 		<span class="mobile-menu" id='UniTimeGWT:MobileMenuPanel'></span>
 		<% if (sysMessage != null && !sysMessage.trim().isEmpty()) { %>
 			<span class='messages'>
-				<div class='WelcomeRowHead'>System Messages</div>
+				<div class='WelcomeRowHead'><loc:message name="system_messages"/></div>
 				<div class='message'><%= sysMessage %></div>
 			</span>
 		<% } %>
@@ -166,7 +167,7 @@
 		</tt:hasProperty>
 	</span>
 </span></span></span>
-	
+</loc:bundle>	
 </BODY>
 <script language="JavaScript" type="text/javascript">
 	if (parent && parent.hideGwtDialog && parent.refreshPage) {

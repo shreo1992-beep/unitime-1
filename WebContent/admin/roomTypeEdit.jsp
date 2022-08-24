@@ -23,10 +23,10 @@
 <%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
 <%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
 <%@ taglib uri="http://www.unitime.org/tags-custom" prefix="tt" %>
-
+<%@ taglib uri="http://www.unitime.org/tags-localization" prefix="loc" %>
 <tiles:importAttribute />
-
-<tt:confirm name="confirmDelete">The room type will be deleted. Continue?</tt:confirm>
+<loc:bundle name="CourseMessages">
+<tt:confirm name="confirmDelete"><loc:message name="MessageOfDeletionConfirmation" /></tt:confirm>
 
 <html:form action="/roomTypeEdit">
 <html:hidden property="uniqueId"/><html:errors property="uniqueId"/>
@@ -39,29 +39,30 @@
 				<tt:section-header>
 					<tt:section-title>
 						<logic:equal name="roomTypeEditForm" property="op" value="Save">
-						Add
+						<loc:message name="actionAddRoomTypeToList" />
+                                               
 						</logic:equal>
 						<logic:notEqual name="roomTypeEditForm" property="op" value="Save">
-							Edit
+					       <loc:message name="actionEditRoomType" />	
 						</logic:notEqual>
-						Room Type
+					<loc:message name="RoomType" />	
 					</tt:section-title>
 					<logic:equal name="roomTypeEditForm" property="op" value="Save">
-						<html:submit property="op" value="Save" accesskey="S" title="Save Room Type (Alt+S)"/>
+						<html:submit property="op" value="<%=MSG.actionSaveRoomType()%>" accesskey="S" title="Save Room Type (Alt+S)"/>
 					</logic:equal>
 					<logic:notEqual name="roomTypeEditForm" property="op" value="Save">
-						<html:submit property="op" value="Update" accesskey="U" title="Update Room Type (Alt+U)"/>
+						<html:submit property="op" value="<%=MSG.actionUpdateRoomType()%>" accesskey="U" title="Update Room Type (Alt+U)"/>
 						<logic:equal name="roomTypeEditForm" property="canEdit" value="true">
-							<html:submit property="op" value="Delete" onclick="return confirmDelete();" accesskey="D" title="Delete Room Type (Alt+D)"/>
+							<html:submit property="op" value="<%=MSG.actionDeleteRoomType()%>" onclick="return confirmDelete();" accesskey="D" title="Delete Room Type (Alt+D)"/>
 						</logic:equal> 
 					</logic:notEqual>
-					<html:submit property="op" value="Back" title="Return to Room Types (Alt+B)" accesskey="B"/>
+					<html:submit property="op" value="<%=MSG.actionBackToRoomTypeList()%>" title="Return to Room Types (Alt+B)" accesskey="B"/>
 				</tt:section-header>
 			</TD>
 		</TR>
 
 		<TR>
-			<TD>Reference:</TD>
+			<TD><loc:message name="Reference" />:</TD>
 			<TD colspan='2'>
 				<html:text property="reference" size="20" maxlength="20"/>
 				&nbsp;<html:errors property="reference"/>
@@ -69,7 +70,7 @@
 		</TR>
 
 		<TR>
-			<TD>Label:</TD>
+			<TD><loc:message name="Label" />:</TD>
 			<TD colspan='2'>
 				<html:text property="label" size="60" maxlength="60"/>
 				&nbsp;<html:errors property="label"/>
@@ -78,11 +79,11 @@
 
 		<logic:equal name="roomTypeEditForm" property="canEdit" value="true">
 			<TR>
-				<TD>Type:</TD>
+				<TD><loc:message name="RoomTypeidentifier" />:</TD>
 				<TD colspan='2'>
 				<html:select property="type">
-					<html:option value="0">Room</html:option>
-					<html:option value="1">Other Location</html:option>
+					<html:option value="0"><loc:message name="prefRoom" /></html:option>
+					<html:option value="1"><loc:message name="OtherRoomTypeLocation" /></html:option>
 				</html:select>
 				&nbsp;<html:errors property="type"/>
 			</TR>
@@ -99,15 +100,15 @@
 		<TR>
 			<TD align="right" colspan="3">
 				<logic:equal name="roomTypeEditForm" property="op" value="Save">
-					<html:submit property="op" value="Save" accesskey="S" title="Save Room Type (Alt+S)"/>
+					<html:submit property="op" value="<%=MSG.actionSaveRoomType()%>" accesskey="S" title="Save Room Type (Alt+S)"/>
 				</logic:equal>
 				<logic:notEqual name="roomTypeEditForm" property="op" value="Save">
-					<html:submit property="op" value="Update" accesskey="U" title="Update Room Type (Alt+U)"/>
+					<html:submit property="op" value="<%=MSG.actionUpdateRoomType()%>" accesskey="U" title="Update Room Type (Alt+U)"/>
 					<logic:equal name="roomTypeEditForm" property="canEdit" value="true">
-						<html:submit property="op" value="Delete" onclick="return confirmDelete();" accesskey="D" title="Delete Room Type (Alt+D)"/>
+						<html:submit property="op" value="<%=MSG.actionDeleteRoomType()%>" onclick="return confirmDelete();" accesskey="D" title="Delete Room Type (Alt+D)"/>
 					</logic:equal>
 				</logic:notEqual>
-				<html:submit property="op" value="Back" title="Return to Room Types (Alt+B)" accesskey="B"/>
+				<html:submit property="op" value="<%=MSG.actionBackToRoomTypeList()%>" title="Return to Room Types (Alt+B)" accesskey="B"/>
 			</TD>
 		</TR>
 	</TABLE>
@@ -117,9 +118,15 @@
 		<tr>
 			<td colspan='5'>
 				<tt:section-header>
-					<tt:section-title>Room Types</tt:section-title>
-					<html:submit property="op" value="Add Room Type" accesskey="A" title="Create New Room Type (Alt+A)"/>
+					<tt:section-title><loc:message name="propertyRoomTypes"/></tt:section-title>
+					<!--<html:submit property="op" value="Add Room Type" accesskey="A" title="Create New Room Type (Alt+A)"/>-->
+                                            <html:submit property="op" value="<%=MSG.actionAddRoomType() %>"
+                                                accesskey="A"
+                                             
+                                                title="Create New Room Type (Alt+A)"/>
+                                        
 				</tt:section-header>
+
 			</td>
 		</tr>
 		<%= request.getAttribute("RoomType.table") %> 
@@ -130,9 +137,14 @@
 		</tr>
 		<tr>
 			<td colspan='5' align="right">
-				<html:submit property="op" value="Add Room Type" accesskey="A" title="Create New Room Type (Alt+A)"/>
+			<!--	<html:submit property="op" value="Add Room Type" accesskey="A" title="Create New Room Type (Alt+A)"/>-->
+                                <html:submit property="op" value="<%=MSG.actionAddRoomType() %>"
+                                                accesskey="A"
+
+                                                title="Create New Room Type (Alt+A)"/>
 			</td>
 		</tr>
 	</TABLE>
 </logic:equal>
 </html:form>
+</loc:bundle>

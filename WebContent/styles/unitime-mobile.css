@@ -630,7 +630,7 @@
 		margin:0px;
 	}
 	
-	.unitime-ConfirmationPanel .message-panel {
+	.unitime-ConfirmationPanel .request-note {
 		max-width: calc(80vw - 95px);
 	}
 	
@@ -661,7 +661,7 @@
 		overflow-y: auto;
 	}
 	
-	.unitime-ChangeGradeModesDialog .approval-panel {
+	.unitime-ChangeGradeModesDialog .request-note {
 		max-width: calc(90vw - 15px);
 	}
 	
@@ -672,10 +672,6 @@
 	.unitime-AdvisorCourseRequestsDialog .requests {
 		max-width: 90vw;
 		max-height: 40vh;
-	}
-	
-	.unitime-WaitListedRequestPreferences {
-		width: calc(90vw + 20px);
 	}
 }
 
