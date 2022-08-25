@@ -19,6 +19,8 @@
 */
 package org.unitime.timetable.gwt.resources;
 
+import com.google.gwt.safehtml.shared.SafeHtml;
+
 /**
  * @author Tomas Muller
  */
@@ -3174,4 +3176,6 @@ public interface StudentSectioningMessages extends Messages {
 	
 	@DefaultMessage("{0} of {1}")
 	String waitListPosition(Integer position, Integer total);
+
+	
 }
